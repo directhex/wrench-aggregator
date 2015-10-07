@@ -16,16 +16,13 @@ import hudson.model.PasswordParameterValue;
 import hudson.model.StringParameterDefinition;
 import hudson.model.StringParameterValue;
 import hudson.model.TransientProjectActionFactory;
+import hudson.util.RunList;
 import hudson.util.Secret;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class Summary extends InvisibleAction {
-
-    private static final String PASSWORD_MASK = "********";
-    private static final String QUOTE_STRING = "\"";
 
     final private AbstractProject<?, ?> project;
 
@@ -34,51 +31,15 @@ public class Summary extends InvisibleAction {
         this.project = project;
     }
 
-    public List<ParameterDefinition> getParameters() {
+    public RunList<?> getBuilds() {
 
-        return definitionProperty(project).getParameterDefinitions();
+        return project.getBuilds();
     }
 
     @Override
     public String toString() {
 
         return "Job parameter summary for " + project.toString();
-    }
-
-    private static ParametersDefinitionProperty definitionProperty(
-            final AbstractProject<?, ?> project
-    ) {
-
-        return project.getProperty(ParametersDefinitionProperty.class);
-    }
-
-    private static String quote(String s) {
-        return QUOTE_STRING + s + QUOTE_STRING;
-    }
-
-    /**
-     * Get default value for {@link ParameterDefinition} that has any and it can be displayed
-     */
-    public String getDefault(final ParameterDefinition d) {
-
-        final ParameterValue v = d.getDefaultParameterValue();
-
-        String res = null;
-        if (d instanceof BooleanParameterDefinition) {
-            res = new Boolean(((BooleanParameterValue) v).value).toString();
-        } else if (d instanceof StringParameterDefinition) {
-            res = quote(((StringParameterValue) v).value);
-        } else if (d instanceof PasswordParameterDefinition) {
-            // check whether we have a default value and return a printable mask if we do
-            String password = Secret.toString(((PasswordParameterValue) v).getValue());
-            if (!password.isEmpty()) {
-                res = quote(PASSWORD_MASK);
-            }
-        } else if (d instanceof ChoiceParameterDefinition) {
-            res = quote(((StringParameterValue) v).value);
-        }
-
-        return res;
     }
 
     @Extension
@@ -97,16 +58,7 @@ public class Summary extends InvisibleAction {
                 target = ((MatrixConfiguration) target).getParent();
             }
 
-            if (!isParameterized(target)) {
-                return Collections.emptyList();
-            }
-
             return Arrays.asList(new Summary(target));
-        }
-
-        private boolean isParameterized(final AbstractProject<?, ?> project) {
-
-            return definitionProperty(project) != null;
         }
     }
 }
