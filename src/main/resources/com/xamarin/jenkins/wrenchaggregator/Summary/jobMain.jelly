@@ -26,9 +26,15 @@ THE SOFTWARE.
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <h2>Wrench recent history</h2>
     <table style="border-collapse: collapse; border-spacing: 0px; border: 1px solid black;">
+        <tr>
+            <th>Build</th>
+            <th>Sha1</th>
+        </tr>
         <j:forEach var="build" items="${it.builds}">
         <tr>
-            <td style="border-spacing: 0px; border: 1px solid black;">${build.fullDisplayName}</td>
+            <td style="border-spacing: 0px; border: 1px solid black;"><a href="${build.absoluteUrl}">${build.displayName}</a></td>
+            <td style="border-spacing: 0px; border: 1px solid black;">${it.getSha1(build)}</td>
+            <!--            ((GitSCM)(project.getScm())).getBuildData(project.getBuilds().getLastBuild()).getLastBuiltRevision().getSha1String() -->
         </tr>
         </j:forEach>
     </table>

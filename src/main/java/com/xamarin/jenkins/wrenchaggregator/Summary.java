@@ -2,25 +2,16 @@ package com.xamarin.jenkins.wrenchaggregator;
 
 import hudson.Extension;
 import hudson.matrix.MatrixConfiguration;
+import hudson.scm.*;
+import hudson.plugins.git.*;
+import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
-import hudson.model.BooleanParameterDefinition;
-import hudson.model.BooleanParameterValue;
-import hudson.model.ChoiceParameterDefinition;
 import hudson.model.InvisibleAction;
-import hudson.model.ParameterDefinition;
-import hudson.model.ParameterValue;
-import hudson.model.ParametersDefinitionProperty;
-import hudson.model.PasswordParameterDefinition;
-import hudson.model.PasswordParameterValue;
-import hudson.model.StringParameterDefinition;
-import hudson.model.StringParameterValue;
 import hudson.model.TransientProjectActionFactory;
 import hudson.util.RunList;
-import hudson.util.Secret;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 public class Summary extends InvisibleAction {
 
@@ -35,11 +26,15 @@ public class Summary extends InvisibleAction {
 
         return project.getBuilds();
     }
+    
+    public String getSha1(AbstractBuild<?, ?> target) {
+        return ((GitSCM)(project.getScm())).getBuildData(target).getLastBuiltRevision().getSha1String();
+    }
 
     @Override
     public String toString() {
 
-        return "Job parameter summary for " + project.toString();
+        return "Wrench aggregation for " + project.toString();
     }
 
     @Extension
@@ -57,7 +52,7 @@ public class Summary extends InvisibleAction {
 
                 target = ((MatrixConfiguration) target).getParent();
             }
-
+            
             return Arrays.asList(new Summary(target));
         }
     }
