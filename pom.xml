@@ -73,6 +73,11 @@
             <artifactId>git</artifactId>
             <version>2.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.jvnet.hudson.plugins</groupId>
+            <artifactId>groovy-postbuild</artifactId>
+            <version>2.0</version>
+        </dependency>
 
     </dependencies>
 </project>
