@@ -8,6 +8,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.InvisibleAction;
+import hudson.model.Result;
 import hudson.model.TransientProjectActionFactory;
 import hudson.util.RunList;
 import java.util.Arrays;
@@ -29,6 +30,23 @@ public class Summary extends InvisibleAction {
     
     public String getSha1(AbstractBuild<?, ?> target) {
         return ((GitSCM)(project.getScm())).getBuildData(target).getLastBuiltRevision().getSha1String();
+    }
+    
+    public String getRepoUrl() {
+        return ((GitSCM)(project.getScm())).getBrowser().getRepoUrl();
+    }
+    
+    public String getColor(AbstractBuild<?, ?> target) {
+        if(target.getResult() != null && target.getResult().isCompleteBuild()) {
+            if(target.getResult().equals(Result.SUCCESS))
+                    return "00ff7f";
+            if(target.getResult().equals(Result.UNSTABLE))
+                    return "ffa500";
+            if(target.getResult().equals(Result.FAILURE))
+                    return "ff0000";
+            return "d3d3d3";
+        }
+        return "ffffff";
     }
 
     @Override

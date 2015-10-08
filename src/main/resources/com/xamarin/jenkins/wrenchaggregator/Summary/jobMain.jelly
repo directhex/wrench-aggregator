@@ -28,13 +28,12 @@ THE SOFTWARE.
     <table style="border-collapse: collapse; border-spacing: 0px; border: 1px solid black;">
         <tr>
             <th>Build</th>
-            <th>Sha1</th>
+            <th>Diff</th>
         </tr>
         <j:forEach var="build" items="${it.builds}">
         <tr>
-            <td style="border-spacing: 0px; border: 1px solid black;"><a href="${build.absoluteUrl}">${build.displayName}</a></td>
-            <td style="border-spacing: 0px; border: 1px solid black;">${it.getSha1(build)}</td>
-            <!--            ((GitSCM)(project.getScm())).getBuildData(project.getBuilds().getLastBuild()).getLastBuiltRevision().getSha1String() -->
+            <td style="border-spacing: 0px; border: 1px solid black; background-color: #${it.getColor(build)};"><a href="${build.absoluteUrl}">${build.displayName}</a></td>
+            <td style="border-spacing: 0px; border: 1px solid black;"><j:if test="${it.getSha1(build) != null}"><a href="${it.repoUrl}/commit/${it.getSha1(build)}">diff</a></j:if></td>
         </tr>
         </j:forEach>
     </table>
