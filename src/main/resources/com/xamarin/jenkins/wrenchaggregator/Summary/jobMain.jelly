@@ -37,15 +37,14 @@ THE SOFTWARE.
         th.rotate > div {
         transform: 
         /* Magic Numbers */
-        translate(25px, 51px)
+        translate(15px, 57px)
         /* 45 is really 360 - 45 */
         rotate(315deg);
-        width: 30px;
+        width: 22px;
         }
         th.rotate > div > span {
         border-bottom: 1px solid #000;
         padding: 0px;
-        padding-left: -5px;
         }
     </style>
 
