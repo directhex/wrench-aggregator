@@ -1,19 +1,24 @@
 package com.xamarin.jenkins.wrenchaggregator;
 
 import hudson.Extension;
+import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixConfiguration;
 import hudson.matrix.MatrixProject;
+import hudson.matrix.MatrixRun;
 import hudson.plugins.git.*;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.InvisibleAction;
 import hudson.model.Result;
+import hudson.model.Run;
 import hudson.model.TransientProjectActionFactory;
 import hudson.util.RunList;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -30,7 +35,7 @@ public class Summary extends InvisibleAction {
     }
 
     public RunList<?> getBuilds() {
-        return project.getBuilds();
+        return project.getBuilds().limit(30);
     }
     
     public String getSha1(AbstractBuild<?, ?> target) {
@@ -43,6 +48,40 @@ public class Summary extends InvisibleAction {
     
     public Boolean getIsMatrix() {
         return (project instanceof MatrixProject);
+    }
+    
+    public ArrayList<String> getStepHeaders() {
+        int mostSeen = 0;
+        ArrayList<String> results = new ArrayList<String>();
+        for(Run target: getBuilds()) {
+            String rawStatus = ((GroovyPostbuildSummaryAction)(target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
+            rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
+            try {
+                StringBuilder result = new StringBuilder();
+                XPath xpath = XPathFactory.newInstance().newXPath();
+                InputSource inputSource = new InputSource( new StringReader( rawStatus ) );
+                NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=1]", inputSource, XPathConstants.NODESET);
+                if(nodes.getLength() > mostSeen) {
+                    results = new ArrayList<String>();
+                    mostSeen = nodes.getLength();
+                    for(int i=0; i < nodes.getLength(); i++) {
+                        results.add(nodes.item(i).getTextContent());
+                    }
+                }
+            } catch(Exception e) {
+                return new ArrayList<String>();
+            }
+        }
+        return results;
+    }
+    
+    public ArrayList<String> getMatrixVariables(MatrixBuild target) {
+        ArrayList<String> results = new ArrayList<String>();
+        List<MatrixRun> rawResults = ((MatrixProject)project).getBuilds().getLastBuild().getExactRuns();
+        for(MatrixRun myRun: rawResults) {
+            results.add(myRun.getBuildVariables().values().iterator().next());
+        }
+        return results;
     }
     
     public String getSummary(AbstractBuild<?, ?> target) {
