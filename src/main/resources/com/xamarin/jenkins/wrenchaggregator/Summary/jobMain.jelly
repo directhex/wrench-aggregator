@@ -29,12 +29,17 @@ THE SOFTWARE.
         <tr>
             <th>Build</th>
             <th>Diff</th>
+            <j:if test="${it.isMatrix == true}">
+                <th><h1>
+                    MATRIX!</h1>
+                </th>
+            </j:if>
         </tr>
         <j:forEach var="build" items="${it.builds}">
         <tr>
             <td style="border-spacing: 0px; border: 1px solid black; background-color: #${it.getColor(build)};"><a href="${build.absoluteUrl}">${build.displayName}</a></td>
             <td style="border-spacing: 0px; border: 1px solid black;"><j:if test="${it.getSha1(build) != null}"><a href="${it.repoUrl}/commit/${it.getSha1(build)}">diff</a></j:if></td>
-            <td style="border-spacing: 0px; border: 1px solid black;">${it.getSummary(build)}</td>
+            ${it.getSummary(build)}
         </tr>
         </j:forEach>
     </table>

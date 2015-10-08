@@ -2,6 +2,7 @@ package com.xamarin.jenkins.wrenchaggregator;
 
 import hudson.Extension;
 import hudson.matrix.MatrixConfiguration;
+import hudson.matrix.MatrixProject;
 import hudson.plugins.git.*;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -13,13 +14,10 @@ import hudson.util.RunList;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collection;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildSummaryAction;
-import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -28,12 +26,10 @@ public class Summary extends InvisibleAction {
     final private AbstractProject<?, ?> project;
 
     public Summary(@SuppressWarnings("rawtypes") AbstractProject project) {
-
         this.project = project;
     }
 
     public RunList<?> getBuilds() {
-
         return project.getBuilds();
     }
     
@@ -45,6 +41,10 @@ public class Summary extends InvisibleAction {
         return ((GitSCM)(project.getScm())).getBrowser().getRepoUrl();
     }
     
+    public Boolean getIsMatrix() {
+        return (project instanceof MatrixProject);
+    }
+    
     public String getSummary(AbstractBuild<?, ?> target) {
         String rawStatus = ((GroovyPostbuildSummaryAction)(target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
         rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
@@ -54,7 +54,17 @@ public class Summary extends InvisibleAction {
             InputSource inputSource = new InputSource( new StringReader( rawStatus ) );
             NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=4]", inputSource, XPathConstants.NODESET);
             for(int i=0; i < nodes.getLength(); i++) {
-                result.append(nodes.item(i).getNodeValue());
+                String color = nodes.item(i).getAttributes().getNamedItem("bgcolor").getNodeValue();
+                if(color.equals("#ff0000"))
+                    result.append("<td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">✗</td>");
+                else if(color.equals("#00ff7f"))
+                    result.append("<td style=\"background-color: #00ff7f; border-spacing: 0px; border: 1px solid black;\">✓</td>");
+                else if(color.equals("#ffa500"))
+                    result.append("<td style=\"background-color: #ffa500; border-spacing: 0px; border: 1px solid black;\">☹</td>");
+                else if(color.equals("#000000"))
+                    result.append("<td style=\"background-color: #000000; color: #ffffff; border-spacing: 0px; border: 1px solid black;\">⌛</td>");
+                else
+                    result.append("<td style=\"background-color: #d3d3d3; border-spacing: 0px; border: 1px solid black;\">?</td>");
             }
             return result.toString();
         } catch(Exception e) {
@@ -77,7 +87,6 @@ public class Summary extends InvisibleAction {
 
     @Override
     public String toString() {
-
         return "Wrench aggregation for " + project.toString();
     }
 
@@ -93,7 +102,6 @@ public class Summary extends InvisibleAction {
         ) {
 
             if (target instanceof MatrixConfiguration) {
-
                 target = ((MatrixConfiguration) target).getParent();
             }
             
