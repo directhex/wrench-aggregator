@@ -74,7 +74,14 @@ THE SOFTWARE.
                         <a href="${it.repoUrl}/commit/${it.getSha1(build)}">diff</a>
                     </j:if>
                 </td>
-                ${it.getSummary(build)}
+                <j:choose>
+                    <j:when test="${it.isMatrix}">
+                        ${it.getMatrixSummary(build)}
+                    </j:when>
+                    <j:otherwise>
+                        ${it.getSummary(build)}
+                    </j:otherwise>
+                </j:choose>
             </tr>
         </j:forEach>
     </table>

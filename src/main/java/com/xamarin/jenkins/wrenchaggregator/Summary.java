@@ -95,6 +95,26 @@ public class Summary extends InvisibleAction {
         return results;
     }
     
+    public String getMatrixSummary(MatrixBuild target) {
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < target.getExactRuns().size() - 1; i++) {
+            result.append("<td style=\"border-spacing: 0px; border: 1px solid black;\"><a href=\"");
+            result.append(target.getExactRuns().get(i).getAbsoluteUrl());
+            result.append("\">");
+            result.append(target.getExactRuns().get(i).getBuildVariables().values().iterator().next());
+            result.append("</a></td>");
+            result.append(getSummary(target.getExactRuns().get(i)));
+            result.append("</tr><tr>");
+        }
+        result.append("<td style=\"border-spacing: 0px; border: 1px solid black;\"><a href=\"");
+        result.append(target.getExactRuns().get(target.getExactRuns().size() - 1).getAbsoluteUrl());
+        result.append("\">");
+        result.append(target.getExactRuns().get(target.getExactRuns().size() - 1).getBuildVariables().values().iterator().next());
+        result.append("</a></td>");
+        result.append(getSummary(target.getExactRuns().get(target.getExactRuns().size() - 1)));
+        return result.toString();
+    }
+    
     public String getSummary(AbstractBuild<?, ?> target) {
         String rawStatus = ((GroovyPostbuildSummaryAction)(target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
         rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
