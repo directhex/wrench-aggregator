@@ -61,6 +61,32 @@ public class Summary extends InvisibleAction {
         return (Axis == null) ? "" : Axis.toString();
     }
     
+    public ArrayList<String> getMatrixStepHeaders() {
+        int mostSeen = 0;
+        ArrayList<String> results = new ArrayList<String>();
+        for(Run outertarget: getBuilds()) {
+            for(MatrixRun target: ((MatrixBuild)(outertarget)).getExactRuns()) {
+                String rawStatus = ((GroovyPostbuildSummaryAction)(target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
+                rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
+                try {
+                    XPath xpath = XPathFactory.newInstance().newXPath();
+                    InputSource inputSource = new InputSource( new StringReader( rawStatus ) );
+                    NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=1]", inputSource, XPathConstants.NODESET);
+                    if(nodes.getLength() > mostSeen) {
+                        results = new ArrayList<String>();
+                        mostSeen = nodes.getLength();
+                        for(int i=0; i < nodes.getLength(); i++) {
+                            results.add(nodes.item(i).getTextContent());
+                        }
+                    }
+                } catch(Exception e) {
+                    return new ArrayList<String>();
+                }
+            }
+        }
+        return results;
+    }
+    
     public ArrayList<String> getStepHeaders() {
         int mostSeen = 0;
         ArrayList<String> results = new ArrayList<String>();
