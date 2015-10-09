@@ -68,7 +68,6 @@ public class Summary extends InvisibleAction {
             String rawStatus = ((GroovyPostbuildSummaryAction)(target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
             rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
             try {
-                StringBuilder result = new StringBuilder();
                 XPath xpath = XPathFactory.newInstance().newXPath();
                 InputSource inputSource = new InputSource( new StringReader( rawStatus ) );
                 NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=1]", inputSource, XPathConstants.NODESET);
