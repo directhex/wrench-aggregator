@@ -58,9 +58,7 @@ public class Summary extends InvisibleAction {
     }
     
     public String getAxisLabel() {
-        if(Axis != null)
-            return Axis.toString();
-        return "";
+        return (Axis == null) ? "" : Axis.toString();
     }
     
     public ArrayList<String> getStepHeaders() {
@@ -154,11 +152,7 @@ public class Summary extends InvisibleAction {
         ) {
             Combination Axis;
             
-            if (target instanceof MatrixConfiguration) {
-                Axis = ((MatrixConfiguration) target).getCombination();
-                target = ((MatrixConfiguration) target).getParent();
-            } else
-                Axis = null;
+            Axis = (target instanceof MatrixConfiguration) ? ((MatrixConfiguration) target).getCombination() : null;
             
             return Arrays.asList(new Summary(target, Axis));
         }
