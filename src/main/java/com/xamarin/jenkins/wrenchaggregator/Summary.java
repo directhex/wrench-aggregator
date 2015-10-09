@@ -88,7 +88,7 @@ public class Summary extends InvisibleAction {
     
     public ArrayList<String> getMatrixVariables(MatrixBuild target) {
         ArrayList<String> results = new ArrayList<String>();
-        List<MatrixRun> rawResults = ((MatrixProject)project).getBuilds().getLastBuild().getExactRuns();
+        List<MatrixRun> rawResults = target.getExactRuns();
         for(MatrixRun myRun: rawResults) {
             results.add(myRun.getBuildVariables().values().iterator().next());
         }
