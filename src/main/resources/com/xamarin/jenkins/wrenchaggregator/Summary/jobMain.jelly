@@ -53,6 +53,9 @@ THE SOFTWARE.
         <tr>
             <th class="normal">Build</th>
             <th class="normal">Diff</th>
+            <j:if test="${it.isMatrix}">
+                <th class="normal">Arch</th>
+            </j:if>
             <j:forEach var="step" items="${it.stepHeaders}">
                 <th class="rotate">
                     <div>
@@ -64,9 +67,9 @@ THE SOFTWARE.
         <j:forEach var="build" items="${it.builds}">
             <tr>
                 <td rowspan="${it.isMatrix ? it.getMatrixVariables(build).size() : null}" style="border-spacing: 0px; border: 1px solid black; background-color: #${it.getColor(build)};">
-                    <a href="${build.absoluteUrl}">${build.displayName}</a>
+                    <a href="${build.absoluteUrl}/${it.axisLabel}">${build.displayName}</a>
                 </td>
-                <td style="border-spacing: 0px; border: 1px solid black;">
+                <td rowspan="${it.isMatrix ? it.getMatrixVariables(build).size() : null}" style="border-spacing: 0px; border: 1px solid black;">
                     <j:if test="${it.getSha1(build) != null}">
                         <a href="${it.repoUrl}/commit/${it.getSha1(build)}">diff</a>
                     </j:if>

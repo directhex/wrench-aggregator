@@ -1,6 +1,7 @@
 package com.xamarin.jenkins.wrenchaggregator;
 
 import hudson.Extension;
+import hudson.matrix.Combination;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixConfiguration;
 import hudson.matrix.MatrixProject;
@@ -29,9 +30,11 @@ import org.xml.sax.InputSource;
 public class Summary extends InvisibleAction {
 
     final private AbstractProject<?, ?> project;
+    final private Combination Axis;
 
-    public Summary(@SuppressWarnings("rawtypes") AbstractProject project) {
+    public Summary(@SuppressWarnings("rawtypes") AbstractProject project, Combination Axis) {
         this.project = project;
+        this.Axis = Axis;
     }
 
     public RunList<?> getBuilds() {
@@ -47,7 +50,17 @@ public class Summary extends InvisibleAction {
     }
     
     public Boolean getIsMatrix() {
-        return (project instanceof MatrixProject);
+        return (project instanceof MatrixProject && Axis == null);
+    }
+    
+    public Boolean getIsAxis() {
+        return (Axis != null);
+    }
+    
+    public String getAxisLabel() {
+        if(Axis != null)
+            return Axis.toString();
+        return "";
     }
     
     public ArrayList<String> getStepHeaders() {
@@ -139,12 +152,15 @@ public class Summary extends InvisibleAction {
         public Collection<? extends Action> createFor(
                 @SuppressWarnings("rawtypes") AbstractProject target
         ) {
-
-            if (target instanceof MatrixConfiguration) {
-                target = ((MatrixConfiguration) target).getParent();
-            }
+            Combination Axis;
             
-            return Arrays.asList(new Summary(target));
+            if (target instanceof MatrixConfiguration) {
+                Axis = ((MatrixConfiguration) target).getCombination();
+                target = ((MatrixConfiguration) target).getParent();
+            } else
+                Axis = null;
+            
+            return Arrays.asList(new Summary(target, Axis));
         }
     }
 }
