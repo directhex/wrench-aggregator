@@ -40,27 +40,27 @@ public class Summary extends InvisibleAction {
     public RunList<?> getBuilds() {
         return project.getBuilds().limit(30);
     }
-    
+
     public String getSha1(AbstractBuild<?, ?> target) {
-        return ((GitSCM)(project.getScm())).getBuildData(target).getLastBuiltRevision().getSha1String();
+        return ((GitSCM) (project.getScm())).getBuildData(target).getLastBuiltRevision().getSha1String();
     }
-    
+
     public String getRepoUrl() {
-        return ((GitSCM)(project.getScm())).getBrowser().getRepoUrl();
+        return ((GitSCM) (project.getScm())).getBrowser().getRepoUrl();
     }
-    
+
     public Boolean getIsMatrix() {
         return (project instanceof MatrixProject && Axis == null);
     }
-    
+
     public Boolean getIsAxis() {
         return (Axis != null);
     }
-    
+
     public String getAxisLabel() {
         return (Axis == null) ? "" : Axis.toString();
     }
-    
+
     public ArrayList<String> getMatrixStepHeaders() {
         int mostSeen = 0;
         ArrayList<String> results = new ArrayList<String>();
@@ -88,43 +88,43 @@ public class Summary extends InvisibleAction {
         }
         return results;
     }
-    
+
     public ArrayList<String> getStepHeaders() {
         int mostSeen = 0;
         ArrayList<String> results = new ArrayList<String>();
-        for(Run target: getBuilds()) {
-            String rawStatus = ((GroovyPostbuildSummaryAction)(target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
+        for (Run target : getBuilds()) {
+            String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
             rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
             try {
                 XPath xpath = XPathFactory.newInstance().newXPath();
-                InputSource inputSource = new InputSource( new StringReader( rawStatus ) );
+                InputSource inputSource = new InputSource(new StringReader(rawStatus));
                 NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=1]", inputSource, XPathConstants.NODESET);
-                if(nodes.getLength() > mostSeen) {
+                if (nodes.getLength() > mostSeen) {
                     results = new ArrayList<String>();
                     mostSeen = nodes.getLength();
-                    for(int i=0; i < nodes.getLength(); i++) {
+                    for (int i = 0; i < nodes.getLength(); i++) {
                         results.add(nodes.item(i).getTextContent());
                     }
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 return new ArrayList<String>();
             }
         }
         return results;
     }
-    
+
     public ArrayList<String> getMatrixVariables(MatrixBuild target) {
         ArrayList<String> results = new ArrayList<String>();
         List<MatrixRun> rawResults = target.getExactRuns();
-        for(MatrixRun myRun: rawResults) {
+        for (MatrixRun myRun : rawResults) {
             results.add(myRun.getBuildVariables().values().iterator().next());
         }
         return results;
     }
-    
+
     public String getMatrixSummary(MatrixBuild target) {
         StringBuilder result = new StringBuilder();
-        for(int i = 0; i < target.getExactRuns().size() - 1; i++) {
+        for (int i = 0; i < target.getExactRuns().size() - 1; i++) {
             result.append("<td style=\"border-spacing: 0px; border: 1px solid black;\"><a href=\"");
             result.append(target.getExactRuns().get(i).getAbsoluteUrl());
             result.append("\">");
@@ -141,42 +141,46 @@ public class Summary extends InvisibleAction {
         result.append(getSummary(target.getExactRuns().get(target.getExactRuns().size() - 1)));
         return result.toString();
     }
-    
+
     public String getSummary(AbstractBuild<?, ?> target) {
-        String rawStatus = ((GroovyPostbuildSummaryAction)(target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
-        rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
         try {
+            String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
+            rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
             StringBuilder result = new StringBuilder();
             XPath xpath = XPathFactory.newInstance().newXPath();
-            InputSource inputSource = new InputSource( new StringReader( rawStatus ) );
+            InputSource inputSource = new InputSource(new StringReader(rawStatus));
             NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=4]", inputSource, XPathConstants.NODESET);
-            for(int i=0; i < nodes.getLength(); i++) {
+            for (int i = 0; i < nodes.getLength(); i++) {
                 String color = nodes.item(i).getAttributes().getNamedItem("bgcolor").getNodeValue();
-                if(color.equals("#ff0000"))
+                if (color.equals("#ff0000")) {
                     result.append("<td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">✗</td>");
-                else if(color.equals("#00ff7f"))
+                } else if (color.equals("#00ff7f")) {
                     result.append("<td style=\"background-color: #00ff7f; border-spacing: 0px; border: 1px solid black;\">✓</td>");
-                else if(color.equals("#ffa500"))
+                } else if (color.equals("#ffa500")) {
                     result.append("<td style=\"background-color: #ffa500; border-spacing: 0px; border: 1px solid black;\">☹</td>");
-                else if(color.equals("#000000"))
+                } else if (color.equals("#000000")) {
                     result.append("<td style=\"background-color: #000000; color: #ffffff; border-spacing: 0px; border: 1px solid black;\">⌛</td>");
-                else
+                } else {
                     result.append("<td style=\"background-color: #d3d3d3; border-spacing: 0px; border: 1px solid black;\">?</td>");
+                }
             }
             return result.toString();
-        } catch(Exception e) {
+        } catch (Exception e) {
             return "<td style=\"background-color: #ff0000;\">ERROR</td>";
         }
     }
-    
+
     public String getColor(AbstractBuild<?, ?> target) {
-        if(target.getResult() != null && target.getResult().isCompleteBuild()) {
-            if(target.getResult().equals(Result.SUCCESS))
-                    return "00ff7f";
-            if(target.getResult().equals(Result.UNSTABLE))
-                    return "ffa500";
-            if(target.getResult().equals(Result.FAILURE))
-                    return "ff0000";
+        if (target.getResult() != null && target.getResult().isCompleteBuild()) {
+            if (target.getResult().equals(Result.SUCCESS)) {
+                return "00ff7f";
+            }
+            if (target.getResult().equals(Result.UNSTABLE)) {
+                return "ffa500";
+            }
+            if (target.getResult().equals(Result.FAILURE)) {
+                return "ff0000";
+            }
             return "d3d3d3";
         }
         return "ffffff";
@@ -191,16 +195,17 @@ public class Summary extends InvisibleAction {
     public static class SummaryFactory extends TransientProjectActionFactory {
 
         /**
-         * For matrix projects parameter actions are attached to the MatrixProject
+         * For matrix projects parameter actions are attached to the
+         * MatrixProject
          */
         @Override
         public Collection<? extends Action> createFor(
                 @SuppressWarnings("rawtypes") AbstractProject target
         ) {
             Combination Axis;
-            
+
             Axis = (target instanceof MatrixConfiguration) ? ((MatrixConfiguration) target).getCombination() : null;
-            
+
             return Arrays.asList(new Summary(target, Axis));
         }
     }
