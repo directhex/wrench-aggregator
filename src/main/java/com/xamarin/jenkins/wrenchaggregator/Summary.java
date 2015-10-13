@@ -66,7 +66,7 @@ public class Summary extends InvisibleAction {
         ArrayList<String> results = new ArrayList<String>();
         for (Run outertarget : getBuilds()) {
             for (MatrixRun target : ((MatrixBuild) (outertarget)).getExactRuns()) {
-                if (target.getActions(GroovyPostbuildSummaryAction.class).toArray() != null) {
+                if (target.getActions(GroovyPostbuildSummaryAction.class).toArray().length > 0) {
                     String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
                     rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
                     try {
@@ -93,21 +93,23 @@ public class Summary extends InvisibleAction {
         int mostSeen = 0;
         ArrayList<String> results = new ArrayList<String>();
         for (Run target : getBuilds()) {
-            String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
-            rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
-            try {
-                XPath xpath = XPathFactory.newInstance().newXPath();
-                InputSource inputSource = new InputSource(new StringReader(rawStatus));
-                NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=1]", inputSource, XPathConstants.NODESET);
-                if (nodes.getLength() > mostSeen) {
-                    results = new ArrayList<String>();
-                    mostSeen = nodes.getLength();
-                    for (int i = 0; i < nodes.getLength(); i++) {
-                        results.add(nodes.item(i).getTextContent());
+            if (target.getActions(GroovyPostbuildSummaryAction.class).toArray().length > 0) {
+                String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
+                rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
+                try {
+                    XPath xpath = XPathFactory.newInstance().newXPath();
+                    InputSource inputSource = new InputSource(new StringReader(rawStatus));
+                    NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=1]", inputSource, XPathConstants.NODESET);
+                    if (nodes.getLength() > mostSeen) {
+                        results = new ArrayList<String>();
+                        mostSeen = nodes.getLength();
+                        for (int i = 0; i < nodes.getLength(); i++) {
+                            results.add(nodes.item(i).getTextContent());
+                        }
                     }
+                } catch (Exception e) {
+                    return new ArrayList<String>();
                 }
-            } catch (Exception e) {
-                return new ArrayList<String>();
             }
         }
         return results;
