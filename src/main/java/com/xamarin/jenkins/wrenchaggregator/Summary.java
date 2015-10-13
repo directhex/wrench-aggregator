@@ -127,7 +127,7 @@ public class Summary extends InvisibleAction {
     public String getMatrixSummary(MatrixBuild target) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < target.getExactRuns().size() - 1; i++) {
-            result.append("<td style=\"border-spacing: 0px; border: 1px solid black; min-width: 100px; background-color: #");
+            result.append("<td class=\"wrench\" style=\"min-width: 100px; background-color: #");
             result.append(getColor(target.getExactRuns().get(i)));
             result.append("\"><a href=\"");
             result.append(target.getExactRuns().get(i).getAbsoluteUrl());
@@ -137,7 +137,7 @@ public class Summary extends InvisibleAction {
             result.append(getSummary(target.getExactRuns().get(i)));
             result.append("</tr><tr>");
         }
-        result.append("<td style=\"border-spacing: 0px; border: 1px solid black; min-width: 100px; background-color: #");
+        result.append("<td class=\"wrench\" style=\"min-width: 100px; background-color: #");
         result.append(getColor(target.getExactRuns().get(target.getExactRuns().size() - 1)));
         result.append("\"><a href=\"");
         result.append(target.getExactRuns().get(target.getExactRuns().size() - 1).getAbsoluteUrl());
@@ -159,20 +159,20 @@ public class Summary extends InvisibleAction {
             for (int i = 0; i < nodes.getLength(); i++) {
                 String color = nodes.item(i).getAttributes().getNamedItem("bgcolor").getNodeValue();
                 if (color.equals("#ff0000")) {
-                    result.append("<td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">✗</td>");
+                    result.append("<td class=\"wrench\" style=\"background-color: #ff0000;\">✗</td>");
                 } else if (color.equals("#00ff7f")) {
-                    result.append("<td style=\"background-color: #00ff7f; border-spacing: 0px; border: 1px solid black;\">✓</td>");
+                    result.append("<td class=\"wrench\" style=\"background-color: #00ff7f;\">✓</td>");
                 } else if (color.equals("#ffa500")) {
-                    result.append("<td style=\"background-color: #ffa500; border-spacing: 0px; border: 1px solid black;\">☹</td>");
+                    result.append("<td class=\"wrench\" style=\"background-color: #ffa500;\">☹</td>");
                 } else if (color.equals("#000000")) {
-                    result.append("<td style=\"background-color: #000000; color: #ffffff; border-spacing: 0px; border: 1px solid black;\">⌛</td>");
+                    result.append("<td class=\"wrench\" style=\"background-color: #000000; color: #ffffff;\">⌛</td>");
                 } else {
-                    result.append("<td style=\"background-color: #d3d3d3; border-spacing: 0px; border: 1px solid black;\">?</td>");
+                    result.append("<td class=\"wrench\" style=\"background-color: #d3d3d3;\">?</td>");
                 }
             }
             return result.toString();
         } catch (Exception e) {
-            return "<td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">N</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">O</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\"></td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">S</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">T</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">E</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">P</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\"></td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">R</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">E</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">S</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">U</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">L</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">T</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">S</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\"></td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">F</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">O</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">U</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">N</td><td style=\"background-color: #ff0000; border-spacing: 0px; border: 1px solid black;\">D</td>";
+            return "<td class=\"wrench\" style=\"background-color: #ff0000;\">N</td><td class=\"wrench\" style=\"background-color: #ff0000;\">O</td><td class=\"wrench\" style=\"background-color: #ff0000;\"></td><td class=\"wrench\" style=\"background-color: #ff0000;\">S</td><td class=\"wrench\" style=\"background-color: #ff0000;\">T</td><td class=\"wrench\" style=\"background-color: #ff0000;\">E</td><td class=\"wrench\" style=\"background-color: #ff0000;\">P</td><td class=\"wrench\" style=\"background-color: #ff0000;\"></td><td class=\"wrench\" style=\"background-color: #ff0000;\">R</td><td class=\"wrench\" style=\"background-color: #ff0000;\">E</td><td class=\"wrench\" style=\"background-color: #ff0000;\">S</td><td class=\"wrench\" style=\"background-color: #ff0000;\">U</td><td class=\"wrench\" style=\"background-color: #ff0000;\">L</td><td class=\"wrench\" style=\"background-color: #ff0000;\">T</td><td class=\"wrench\" style=\"background-color: #ff0000;\">S</td><td class=\"wrench\" style=\"background-color: #ff0000;\"></td><td class=\"wrench\" style=\"background-color: #ff0000;\">F</td><td class=\"wrench\" style=\"background-color: #ff0000;\">O</td><td class=\"wrench\" style=\"background-color: #ff0000;\">U</td><td class=\"wrench\" style=\"background-color: #ff0000;\">N</td><td class=\"wrench\" style=\"background-color: #ff0000;\">D</td>";
         }
     }
 
