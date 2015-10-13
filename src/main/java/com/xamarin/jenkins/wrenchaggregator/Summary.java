@@ -127,7 +127,9 @@ public class Summary extends InvisibleAction {
     public String getMatrixSummary(MatrixBuild target) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < target.getExactRuns().size() - 1; i++) {
-            result.append("<td style=\"border-spacing: 0px; border: 1px solid black;\"><a href=\"");
+            result.append("<td style=\"border-spacing: 0px; border: 1px solid black; min-width: 100px; background-color: #");
+            result.append(getColor(target.getExactRuns().get(i)));
+            result.append("\"><a href=\"");
             result.append(target.getExactRuns().get(i).getAbsoluteUrl());
             result.append("\">");
             result.append(target.getExactRuns().get(i).getBuildVariables().values().iterator().next());
@@ -135,7 +137,9 @@ public class Summary extends InvisibleAction {
             result.append(getSummary(target.getExactRuns().get(i)));
             result.append("</tr><tr>");
         }
-        result.append("<td style=\"border-spacing: 0px; border: 1px solid black;\"><a href=\"");
+        result.append("<td style=\"border-spacing: 0px; border: 1px solid black; min-width: 100px; background-color: #");
+        result.append(getColor(target.getExactRuns().get(target.getExactRuns().size() - 1)));
+        result.append("\"><a href=\"");
         result.append(target.getExactRuns().get(target.getExactRuns().size() - 1).getAbsoluteUrl());
         result.append("\">");
         result.append(target.getExactRuns().get(target.getExactRuns().size() - 1).getBuildVariables().values().iterator().next());
