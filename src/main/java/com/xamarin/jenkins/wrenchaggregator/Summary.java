@@ -90,6 +90,9 @@ public class Summary extends InvisibleAction {
     }
 
     public ArrayList<String> getStepHeaders() {
+        if (getIsMatrix()) {
+            return getMatrixStepHeaders();
+        }
         ArrayList<String> results = new ArrayList<String>();
         for (Run target : getBuilds()) {
             if (target.getActions(GroovyPostbuildSummaryAction.class).toArray().length > 0) {
@@ -126,7 +129,7 @@ public class Summary extends InvisibleAction {
 
     public String getMatrixSummary(MatrixBuild target) {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < target.getExactRuns().size() - 1; i++) {
+        for (int i = 0; i < target.getExactRuns().size(); i++) {
             result.append("<td class=\"wrench\" style=\"min-width: 100px; background-color: #");
             result.append(getColor(target.getExactRuns().get(i)));
             result.append("\"><a href=\"");
@@ -135,16 +138,9 @@ public class Summary extends InvisibleAction {
             result.append(target.getExactRuns().get(i).getBuildVariables().values().iterator().next());
             result.append("</a></td>");
             result.append(getSummary(target.getExactRuns().get(i)));
-            result.append("</tr><tr>");
+            if(i != target.getExactRuns().size() - 1)
+                result.append("</tr><tr>");
         }
-        result.append("<td class=\"wrench\" style=\"min-width: 100px; background-color: #");
-        result.append(getColor(target.getExactRuns().get(target.getExactRuns().size() - 1)));
-        result.append("\"><a href=\"");
-        result.append(target.getExactRuns().get(target.getExactRuns().size() - 1).getAbsoluteUrl());
-        result.append("\">");
-        result.append(target.getExactRuns().get(target.getExactRuns().size() - 1).getBuildVariables().values().iterator().next());
-        result.append("</a></td>");
-        result.append(getSummary(target.getExactRuns().get(target.getExactRuns().size() - 1)));
         return result.toString();
     }
 

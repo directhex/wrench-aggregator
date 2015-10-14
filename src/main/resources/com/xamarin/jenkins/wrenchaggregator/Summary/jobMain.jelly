@@ -60,24 +60,15 @@ THE SOFTWARE.
             <j:choose>
                 <j:when test="${it.isMatrix}">
                     <th class="normal">Arch</th>
-                    <j:forEach var="step" items="${it.matrixStepHeaders}">
-                        <th class="rotate">
-                            <div>
-                                <span>${step}</span>
-                            </div>
-                        </th>
-                    </j:forEach>            
                 </j:when>
-                <j:otherwise>
-                    <j:forEach var="step" items="${it.stepHeaders}">
-                        <th class="rotate">
-                            <div>
-                                <span>${step}</span>
-                            </div>
-                        </th>
-                    </j:forEach>
-                </j:otherwise>
             </j:choose>
+            <j:forEach var="step" items="${it.stepHeaders}">
+                <th class="rotate">
+                    <div>
+                        <span>${step}</span>
+                    </div>
+                </th>
+            </j:forEach>
         </tr>
         <j:forEach var="build" items="${it.builds}">
             <tr>
