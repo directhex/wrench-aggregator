@@ -19,6 +19,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -151,19 +152,26 @@ public class Summary extends InvisibleAction {
             StringBuilder result = new StringBuilder();
             XPath xpath = XPathFactory.newInstance().newXPath();
             InputSource inputSource = new InputSource(new StringReader(rawStatus));
-            NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=4]", inputSource, XPathConstants.NODESET);
+            NodeList nodes = (NodeList) xpath.evaluate("/table/tr", inputSource, XPathConstants.NODESET);
+            HashMap nodesStatus = new HashMap();
             for (int i = 0; i < nodes.getLength(); i++) {
-                String color = nodes.item(i).getAttributes().getNamedItem("bgcolor").getNodeValue();
-                if (color.equals("#ff0000")) {
-                    result.append("<td class=\"wrench\" style=\"background-color: #ff0000;\">✗</td>");
-                } else if (color.equals("#00ff7f")) {
-                    result.append("<td class=\"wrench\" style=\"background-color: #00ff7f;\">✓</td>");
-                } else if (color.equals("#ffa500")) {
-                    result.append("<td class=\"wrench\" style=\"background-color: #ffa500;\">☹</td>");
-                } else if (color.equals("#000000")) {
-                    result.append("<td class=\"wrench\" style=\"background-color: #000000; color: #ffffff;\">⌛</td>");
+                nodesStatus.put(nodes.item(i).getChildNodes().item(0).getTextContent(), nodes.item(i).getChildNodes().item(3).getTextContent());
+            }
+            for (String column : getStepHeaders()) {
+                if (nodesStatus.containsKey(column)) {
+                    if (nodesStatus.get(column).equals("Failed")) {
+                        result.append("<td class=\"wrench\" style=\"background-color: #ff0000;\">✗</td>");
+                    } else if (nodesStatus.get(column).equals("Passed")) {
+                        result.append("<td class=\"wrench\" style=\"background-color: #00ff7f;\">✓</td>");
+                    } else if (nodesStatus.get(column).equals("Unstable")) {
+                        result.append("<td class=\"wrench\" style=\"background-color: #ffa500;\">☹</td>");
+                    } else if (nodesStatus.get(column).equals("Skipped")) {
+                        result.append("<td class=\"wrench\" style=\"background-color: #000000; color: #ffffff;\">⌛</td>");
+                    } else {
+                        result.append("<td class=\"wrench\" style=\"background-color: #d3d3d3;\">?</td>");
+                    }
                 } else {
-                    result.append("<td class=\"wrench\" style=\"background-color: #d3d3d3;\">?</td>");
+                    result.append("<td class=\"wrench\"></td>");
                 }
             }
             return result.toString();
