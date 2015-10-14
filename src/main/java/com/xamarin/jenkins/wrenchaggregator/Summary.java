@@ -62,7 +62,6 @@ public class Summary extends InvisibleAction {
     }
 
     public ArrayList<String> getMatrixStepHeaders() {
-        int mostSeen = 0;
         ArrayList<String> results = new ArrayList<String>();
         for (Run outertarget : getBuilds()) {
             for (MatrixRun target : ((MatrixBuild) (outertarget)).getExactRuns()) {
@@ -73,12 +72,13 @@ public class Summary extends InvisibleAction {
                         XPath xpath = XPathFactory.newInstance().newXPath();
                         InputSource inputSource = new InputSource(new StringReader(rawStatus));
                         NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=1]", inputSource, XPathConstants.NODESET);
-                        if (nodes.getLength() > mostSeen) {
-                            results = new ArrayList<String>();
-                            mostSeen = nodes.getLength();
-                            for (int i = 0; i < nodes.getLength(); i++) {
-                                results.add(nodes.item(i).getTextContent());
+                        String lastSeen = null;
+                        for (int i = 0; i < nodes.getLength(); i++) {
+                            if (!results.contains(nodes.item(i).getTextContent())) {
+                                int index = (lastSeen == null) ? 0 : results.indexOf(lastSeen) + 1;
+                                results.add(index, nodes.item(i).getTextContent());
                             }
+                            lastSeen = nodes.item(i).getTextContent();
                         }
                     } catch (Exception e) {
                         return new ArrayList<String>();
@@ -90,7 +90,6 @@ public class Summary extends InvisibleAction {
     }
 
     public ArrayList<String> getStepHeaders() {
-        int mostSeen = 0;
         ArrayList<String> results = new ArrayList<String>();
         for (Run target : getBuilds()) {
             if (target.getActions(GroovyPostbuildSummaryAction.class).toArray().length > 0) {
@@ -100,12 +99,13 @@ public class Summary extends InvisibleAction {
                     XPath xpath = XPathFactory.newInstance().newXPath();
                     InputSource inputSource = new InputSource(new StringReader(rawStatus));
                     NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=1]", inputSource, XPathConstants.NODESET);
-                    if (nodes.getLength() > mostSeen) {
-                        results = new ArrayList<String>();
-                        mostSeen = nodes.getLength();
-                        for (int i = 0; i < nodes.getLength(); i++) {
-                            results.add(nodes.item(i).getTextContent());
+                    String lastSeen = null;
+                    for (int i = 0; i < nodes.getLength(); i++) {
+                        if (!results.contains(nodes.item(i).getTextContent())) {
+                            int index = (lastSeen == null) ? 0 : results.indexOf(lastSeen) + 1;
+                            results.add(index, nodes.item(i).getTextContent());
                         }
+                        lastSeen = nodes.item(i).getTextContent();
                     }
                 } catch (Exception e) {
                     return new ArrayList<String>();
