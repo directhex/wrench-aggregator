@@ -133,15 +133,17 @@ public class Summary extends InvisibleAction {
 
     public String getMatrixSummary(MatrixBuild target) {
         StringBuilder result = new StringBuilder();
+        MatrixRun current;
         for (int i = 0; i < target.getExactRuns().size(); i++) {
+            current = target.getExactRuns().get(i);
             result.append("<td class=\"wrench\" style=\"min-width: 100px; background-color: #");
-            result.append(getColor(target.getExactRuns().get(i)));
+            result.append(getColor(current));
             result.append("\"><a href=\"");
-            result.append(target.getExactRuns().get(i).getAbsoluteUrl());
+            result.append(current.getAbsoluteUrl());
             result.append("\">");
-            result.append(target.getExactRuns().get(i).getBuildVariables().values().iterator().next());
+            result.append(current.getBuildVariables().values().iterator().next());
             result.append("</a></td>");
-            result.append(getSummary(target.getExactRuns().get(i)));
+            result.append(getSummary(current));
             if(i != target.getExactRuns().size() - 1)
                 result.append("</tr><tr>");
         }
