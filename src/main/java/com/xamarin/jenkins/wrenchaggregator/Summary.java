@@ -66,12 +66,33 @@ public class Summary extends InvisibleAction {
         return (Axis == null) ? "" : Axis.toString();
     }
 
+    private void MatrixVacuum() {
+        RunList<?> runsRightNow = getBuilds();
+        for(Object currentJob : statusCache.keySet()) {
+            if(!runsRightNow.contains(((MatrixRun)currentJob).getParentBuild()))
+                statusCache.remove(currentJob);
+        }
+    }
+    
+    private void Vacuum() {
+        if(getIsMatrix()) {
+            MatrixVacuum();
+            return;
+        }
+        RunList<?> runsRightNow = getBuilds();
+        for(Object currentJob : statusCache.keySet()) {
+            if(!runsRightNow.contains(currentJob))
+                statusCache.remove(currentJob);
+        }
+    }
+    
     public ArrayList<String> getMatrixStepHeaders() {
-        if (lastKnownBuild != null && getBuilds().getLastBuild().equals(lastKnownBuild)) {
+        if (lastKnownBuild != null && cachedStepHeaders.size() > 0 && getBuilds().getLastBuild().equals(lastKnownBuild)) {
             return cachedStepHeaders;
         }
         lastKnownBuild = getBuilds().getLastBuild();
         cachedStepHeaders = new ArrayList<String>();
+        Vacuum();
         for (Run outertarget : getBuilds()) {
             for (MatrixRun target : ((MatrixBuild) (outertarget)).getExactRuns()) {
                 if (target.getActions(GroovyPostbuildSummaryAction.class).toArray().length > 0) {
@@ -104,11 +125,12 @@ public class Summary extends InvisibleAction {
         if (getIsMatrix()) {
             return getMatrixStepHeaders();
         }
-        if (lastKnownBuild != null && getBuilds().getLastBuild().equals(lastKnownBuild)) {
+        if (lastKnownBuild != null && cachedStepHeaders.size() > 0 && getBuilds().getLastBuild().equals(lastKnownBuild)) {
             return cachedStepHeaders;
         }
         lastKnownBuild = getBuilds().getLastBuild();
         cachedStepHeaders = new ArrayList<String>();
+        Vacuum();
         for (Run target : getBuilds()) {
             if (target.getActions(GroovyPostbuildSummaryAction.class).toArray().length > 0) {
                 String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
