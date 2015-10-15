@@ -32,6 +32,7 @@ public class Summary extends InvisibleAction {
 
     final private AbstractProject<?, ?> project;
     final private Combination Axis;
+    private int lastColspan = 0;
 
     public Summary(@SuppressWarnings("rawtypes") AbstractProject project, Combination Axis) {
         this.project = project;
@@ -87,6 +88,7 @@ public class Summary extends InvisibleAction {
                 }
             }
         }
+        this.lastColspan = results.size();
         return results;
     }
 
@@ -116,6 +118,7 @@ public class Summary extends InvisibleAction {
                 }
             }
         }
+        this.lastColspan = results.size();
         return results;
     }
 
@@ -177,9 +180,9 @@ public class Summary extends InvisibleAction {
             return result.toString();
         } catch (Exception e) {
             if (target.getResult() != null && target.getResult().isCompleteBuild()) {
-                return "<td class=\"wrench\" colspan=\"" + ((getStepHeaders().size() > 21) ? getStepHeaders().size() : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>";
+                return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>";
             } else {
-                return "<td class=\"wrench\" colspan=\"" + ((getStepHeaders().size() > 7) ? getStepHeaders().size() : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>";
+                return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>";
             }
         }
     }
