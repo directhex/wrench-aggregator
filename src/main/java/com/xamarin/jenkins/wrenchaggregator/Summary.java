@@ -68,10 +68,13 @@ public class Summary extends InvisibleAction {
 
     private void MatrixVacuum() {
         RunList<?> runsRightNow = getBuilds();
+        HashMap newStatusCache = new HashMap(statusCache);
         for(Object currentJob : statusCache.keySet()) {
             if(!runsRightNow.contains(((MatrixRun)currentJob).getParentBuild()))
-                statusCache.remove(currentJob);
+                newStatusCache.remove(currentJob);
         }
+        if(newStatusCache != statusCache)
+            statusCache = newStatusCache;
     }
     
     private void Vacuum() {
@@ -80,10 +83,13 @@ public class Summary extends InvisibleAction {
             return;
         }
         RunList<?> runsRightNow = getBuilds();
+        HashMap newStatusCache = new HashMap(statusCache);
         for(Object currentJob : statusCache.keySet()) {
             if(!runsRightNow.contains(currentJob))
-                statusCache.remove(currentJob);
+                newStatusCache.remove(currentJob);
         }
+        if(newStatusCache != statusCache)
+            statusCache = newStatusCache;
     }
     
     public ArrayList<String> getMatrixStepHeaders() {
