@@ -40,7 +40,7 @@ public class Summary extends InvisibleAction {
     }
 
     public RunList<?> getBuilds() {
-        return project.getBuilds().limit(30);
+        return project.getBuilds().limit(20);
     }
 
     public String getSha1(AbstractBuild<?, ?> target) {
