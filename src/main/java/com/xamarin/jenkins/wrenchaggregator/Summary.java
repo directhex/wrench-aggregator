@@ -200,8 +200,7 @@ public class Summary extends InvisibleAction {
             return result.toString();
         } catch (Exception e) {
             if (target.getResult() != null && target.getResult().isCompleteBuild()) {
-                statusCache.put(target, "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>");
-                return (String) (statusCache.get(target));
+                return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>";
             } else {
                 return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>";
             }
