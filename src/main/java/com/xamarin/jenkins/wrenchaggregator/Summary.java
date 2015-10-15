@@ -33,6 +33,9 @@ public class Summary extends InvisibleAction {
     final private AbstractProject<?, ?> project;
     final private Combination Axis;
     private int lastColspan = 0;
+    private HashMap statusCache = new HashMap();
+    private Run lastKnownBuild;
+    private ArrayList<String> cachedStepHeaders;
 
     public Summary(@SuppressWarnings("rawtypes") AbstractProject project, Combination Axis) {
         this.project = project;
@@ -64,7 +67,10 @@ public class Summary extends InvisibleAction {
     }
 
     public ArrayList<String> getMatrixStepHeaders() {
-        ArrayList<String> results = new ArrayList<String>();
+        if(lastKnownBuild != null && getBuilds().getLastBuild().equals(lastKnownBuild))
+            return cachedStepHeaders;
+        lastKnownBuild = getBuilds().getLastBuild();
+        cachedStepHeaders = new ArrayList<String>();
         for (Run outertarget : getBuilds()) {
             for (MatrixRun target : ((MatrixBuild) (outertarget)).getExactRuns()) {
                 if (target.getActions(GroovyPostbuildSummaryAction.class).toArray().length > 0) {
@@ -76,27 +82,31 @@ public class Summary extends InvisibleAction {
                         NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=1]", inputSource, XPathConstants.NODESET);
                         String lastSeen = null;
                         for (int i = 0; i < nodes.getLength(); i++) {
-                            if (!results.contains(nodes.item(i).getTextContent())) {
-                                int index = (lastSeen == null) ? 0 : results.indexOf(lastSeen) + 1;
-                                results.add(index, nodes.item(i).getTextContent());
+                            if (!cachedStepHeaders.contains(nodes.item(i).getTextContent())) {
+                                int index = (lastSeen == null) ? 0 : cachedStepHeaders.indexOf(lastSeen) + 1;
+                                cachedStepHeaders.add(index, nodes.item(i).getTextContent());
                             }
                             lastSeen = nodes.item(i).getTextContent();
                         }
                     } catch (Exception e) {
-                        return new ArrayList<String>();
+                        cachedStepHeaders = new ArrayList<String>();
+                        return cachedStepHeaders;
                     }
                 }
             }
         }
-        this.lastColspan = results.size();
-        return results;
+        lastColspan = cachedStepHeaders.size();
+        return cachedStepHeaders;
     }
 
     public ArrayList<String> getStepHeaders() {
         if (getIsMatrix()) {
             return getMatrixStepHeaders();
         }
-        ArrayList<String> results = new ArrayList<String>();
+        if(lastKnownBuild != null && getBuilds().getLastBuild().equals(lastKnownBuild))
+            return cachedStepHeaders;
+        lastKnownBuild = getBuilds().getLastBuild();
+        cachedStepHeaders = new ArrayList<String>();
         for (Run target : getBuilds()) {
             if (target.getActions(GroovyPostbuildSummaryAction.class).toArray().length > 0) {
                 String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
@@ -107,19 +117,20 @@ public class Summary extends InvisibleAction {
                     NodeList nodes = (NodeList) xpath.evaluate("/table/tr/td[position()=1]", inputSource, XPathConstants.NODESET);
                     String lastSeen = null;
                     for (int i = 0; i < nodes.getLength(); i++) {
-                        if (!results.contains(nodes.item(i).getTextContent())) {
-                            int index = (lastSeen == null) ? 0 : results.indexOf(lastSeen) + 1;
-                            results.add(index, nodes.item(i).getTextContent());
+                        if (!cachedStepHeaders.contains(nodes.item(i).getTextContent())) {
+                            int index = (lastSeen == null) ? 0 : cachedStepHeaders.indexOf(lastSeen) + 1;
+                            cachedStepHeaders.add(index, nodes.item(i).getTextContent());
                         }
                         lastSeen = nodes.item(i).getTextContent();
                     }
                 } catch (Exception e) {
-                    return new ArrayList<String>();
+                    cachedStepHeaders = new ArrayList<String>();
+                    return cachedStepHeaders;
                 }
             }
         }
-        this.lastColspan = results.size();
-        return results;
+        lastColspan = cachedStepHeaders.size();
+        return cachedStepHeaders;
     }
 
     public ArrayList<String> getMatrixVariables(MatrixBuild target) {
@@ -151,6 +162,8 @@ public class Summary extends InvisibleAction {
     }
 
     public String getSummary(AbstractBuild<?, ?> target) {
+        if(statusCache.containsKey(target))
+            return (String)(statusCache.get(target));
         try {
             String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
             rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
@@ -179,10 +192,12 @@ public class Summary extends InvisibleAction {
                     result.append("<td class=\"wrench\"></td>");
                 }
             }
+            statusCache.put(target, result.toString());
             return result.toString();
         } catch (Exception e) {
             if (target.getResult() != null && target.getResult().isCompleteBuild()) {
-                return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>";
+                statusCache.put(target, "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>");
+                return (String)(statusCache.get(target));
             } else {
                 return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>";
             }
