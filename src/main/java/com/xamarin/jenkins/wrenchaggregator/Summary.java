@@ -200,7 +200,7 @@ public class Summary extends InvisibleAction {
             }
             return "d3d3d3";
         }
-        return "ffffff";
+        return "ffff00";
     }
 
     @Override
