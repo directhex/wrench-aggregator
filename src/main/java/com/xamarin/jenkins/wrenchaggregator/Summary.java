@@ -67,8 +67,9 @@ public class Summary extends InvisibleAction {
     }
 
     public ArrayList<String> getMatrixStepHeaders() {
-        if(lastKnownBuild != null && getBuilds().getLastBuild().equals(lastKnownBuild))
+        if (lastKnownBuild != null && getBuilds().getLastBuild().equals(lastKnownBuild)) {
             return cachedStepHeaders;
+        }
         lastKnownBuild = getBuilds().getLastBuild();
         cachedStepHeaders = new ArrayList<String>();
         for (Run outertarget : getBuilds()) {
@@ -103,8 +104,9 @@ public class Summary extends InvisibleAction {
         if (getIsMatrix()) {
             return getMatrixStepHeaders();
         }
-        if(lastKnownBuild != null && getBuilds().getLastBuild().equals(lastKnownBuild))
+        if (lastKnownBuild != null && getBuilds().getLastBuild().equals(lastKnownBuild)) {
             return cachedStepHeaders;
+        }
         lastKnownBuild = getBuilds().getLastBuild();
         cachedStepHeaders = new ArrayList<String>();
         for (Run target : getBuilds()) {
@@ -155,15 +157,17 @@ public class Summary extends InvisibleAction {
             result.append(current.getBuildVariables().values().iterator().next());
             result.append("</a></td>");
             result.append(getSummary(current));
-            if(i != target.getExactRuns().size() - 1)
+            if (i != target.getExactRuns().size() - 1) {
                 result.append("</tr><tr>");
+            }
         }
         return result.toString();
     }
 
     public String getSummary(AbstractBuild<?, ?> target) {
-        if(statusCache.containsKey(target))
-            return (String)(statusCache.get(target));
+        if (statusCache.containsKey(target)) {
+            return (String) (statusCache.get(target));
+        }
         try {
             String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
             rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
@@ -197,7 +201,7 @@ public class Summary extends InvisibleAction {
         } catch (Exception e) {
             if (target.getResult() != null && target.getResult().isCompleteBuild()) {
                 statusCache.put(target, "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>");
-                return (String)(statusCache.get(target));
+                return (String) (statusCache.get(target));
             } else {
                 return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>";
             }
@@ -239,9 +243,7 @@ public class Summary extends InvisibleAction {
         public Collection<? extends Action> createFor(
                 @SuppressWarnings("rawtypes") AbstractProject target
         ) {
-            Combination Axis;
-
-            Axis = (target instanceof MatrixConfiguration) ? ((MatrixConfiguration) target).getCombination() : null;
+            Combination Axis = (target instanceof MatrixConfiguration) ? ((MatrixConfiguration) target).getCombination() : null;
 
             return Arrays.asList(new Summary(target, Axis));
         }
