@@ -54,41 +54,45 @@ THE SOFTWARE.
 
     <h2>Wrench recent history</h2>
     <table style="border-collapse: collapse; border-spacing: 0px;">
-        <tr>
-            <th class="normal">Build</th>
-            <th class="normal">Diff</th>
-            <j:choose>
-                <j:when test="${it.isMatrix}">
-                    <th class="normal">Arch</th>
-                </j:when>
-            </j:choose>
-            <j:forEach var="step" items="${it.stepHeaders}">
-                <th class="rotate">
-                    <div>
-                        <span>${step}</span>
-                    </div>
-                </th>
-            </j:forEach>
-        </tr>
-        <j:forEach var="build" items="${it.builds}">
+        <thead>
             <tr>
-                <td rowspan="${it.isMatrix ? it.getMatrixVariables(build).size() : null}" class="wrench" style="background-color: #${it.getColor(build)};">
-                    <a href="${build.absoluteUrl}">${build.displayName}</a>
-                </td>
-                <td rowspan="${it.isMatrix ? it.getMatrixVariables(build).size() : null}" class="wrench">
-                    <j:if test="${it.getSha1(build) != null}">
-                        <a href="${it.repoUrl}/commit/${it.getSha1(build)}">diff</a>
-                    </j:if>
-                </td>
+                <th class="normal">Build</th>
+                <th class="normal">Diff</th>
                 <j:choose>
                     <j:when test="${it.isMatrix}">
-                        ${it.getMatrixSummary(build)}
+                        <th class="normal">Arch</th>
                     </j:when>
-                    <j:otherwise>
-                        ${it.getSummary(build)}
-                    </j:otherwise>
                 </j:choose>
+                <j:forEach var="step" items="${it.stepHeaders}">
+                    <th class="rotate">
+                        <div>
+                            <span>${step}</span>
+                        </div>
+                    </th>
+                </j:forEach>
             </tr>
-        </j:forEach>
+        </thead>
+        <tbody>
+            <j:forEach var="build" items="${it.builds}">
+                <tr>
+                    <td rowspan="${it.isMatrix ? it.getMatrixVariables(build).size() : null}" class="wrench" style="background-color: #${it.getColor(build)};">
+                        <a href="${build.absoluteUrl}">${build.displayName}</a>
+                    </td>
+                    <td rowspan="${it.isMatrix ? it.getMatrixVariables(build).size() : null}" class="wrench">
+                        <j:if test="${it.getSha1(build) != null}">
+                            <a href="${it.repoUrl}/commit/${it.getSha1(build)}">diff</a>
+                        </j:if>
+                    </td>
+                    <j:choose>
+                        <j:when test="${it.isMatrix}">
+                            ${it.getMatrixSummary(build)}
+                        </j:when>
+                        <j:otherwise>
+                            ${it.getSummary(build)}
+                        </j:otherwise>
+                    </j:choose>
+                </tr>
+            </j:forEach>
+        </tbody>
     </table>
 </j:jelly>
