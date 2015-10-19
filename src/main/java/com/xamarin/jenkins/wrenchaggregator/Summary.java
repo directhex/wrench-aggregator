@@ -208,17 +208,28 @@ public class Summary extends InvisibleAction {
             InputSource inputSource = new InputSource(new StringReader(rawStatus));
             NodeList nodes = (NodeList) xpath.evaluate("/table/tr", inputSource, XPathConstants.NODESET);
             HashMap nodesStatus = new HashMap();
+            String foundItem;
             for (int i = 0; i < nodes.getLength(); i++) {
-                nodesStatus.put(nodes.item(i).getChildNodes().item(0).getTextContent(), nodes.item(i).getChildNodes().item(3).getTextContent());
+                foundItem = nodes.item(i).getChildNodes().item(3).getTextContent();
+                if (foundItem.equals("Unstable")) {
+                    foundItem = "Unstable;" + target.getAbsoluteUrl() + nodes.item(i).getChildNodes().item(3).getChildNodes().item(0).getAttributes().getNamedItem("href").getNodeValue();
+                } else if (foundItem.equals("Failed")) {
+                    foundItem = "Failed;" + target.getAbsoluteUrl() + nodes.item(i).getChildNodes().item(3).getChildNodes().item(0).getAttributes().getNamedItem("href").getNodeValue();
+                }
+                nodesStatus.put(nodes.item(i).getChildNodes().item(0).getTextContent(), foundItem);
             }
             for (String column : getStepHeaders()) {
                 if (nodesStatus.containsKey(column)) {
-                    if (nodesStatus.get(column).equals("Failed")) {
-                        result.append("<td class=\"wrench\" style=\"background-color: #ff0000;\">✗</td>");
+                    if (((String) (nodesStatus.get(column))).startsWith("Failed")) {
+                        result.append("<td class=\"wrench\" style=\"background-color: #ff0000;\"><a href=\"");
+                        result.append(((String) (nodesStatus.get(column))).substring(7));
+                        result.append("\">✗</a></td>");
                     } else if (nodesStatus.get(column).equals("Passed")) {
                         result.append("<td class=\"wrench\" style=\"background-color: #00ff7f;\">✓</td>");
-                    } else if (nodesStatus.get(column).equals("Unstable")) {
-                        result.append("<td class=\"wrench\" style=\"background-color: #ffa500;\">☹</td>");
+                    } else if (((String) (nodesStatus.get(column))).startsWith("Unstable")) {
+                        result.append("<td class=\"wrench\" style=\"background-color: #ffa500;\"><a href=\"");
+                        result.append(((String) (nodesStatus.get(column))).substring(9));
+                        result.append("\">☹</a></td>");
                     } else if (nodesStatus.get(column).equals("Skipped")) {
                         result.append("<td class=\"wrench\" style=\"background-color: #000000; color: #ffffff;\">⌛</td>");
                     } else {

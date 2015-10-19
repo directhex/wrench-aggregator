@@ -50,6 +50,18 @@ THE SOFTWARE.
         border-spacing: 0px;
         border: 1px solid black;
         }
+        .wrench a:link {
+        text-decoration: none;
+        }
+        .wrench a:visited {
+        text-decoration: none;
+        }
+        .wrench a:hover {
+        text-decoration: underline;
+        }
+        .wrench a:active {
+        text-decoration: underline;
+        }
     </style>
 
     <h2>Wrench recent history</h2>
