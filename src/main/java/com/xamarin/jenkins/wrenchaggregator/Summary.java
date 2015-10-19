@@ -69,29 +69,33 @@ public class Summary extends InvisibleAction {
     private void MatrixVacuum() {
         RunList<?> runsRightNow = getBuilds();
         HashMap newStatusCache = new HashMap(statusCache);
-        for(Object currentJob : statusCache.keySet()) {
-            if(!runsRightNow.contains(((MatrixRun)currentJob).getParentBuild()))
+        for (Object currentJob : statusCache.keySet()) {
+            if (!runsRightNow.contains(((MatrixRun) currentJob).getParentBuild())) {
                 newStatusCache.remove(currentJob);
+            }
         }
-        if(newStatusCache != statusCache)
+        if (newStatusCache != statusCache) {
             statusCache = newStatusCache;
+        }
     }
-    
+
     private void Vacuum() {
-        if(getIsMatrix()) {
+        if (getIsMatrix()) {
             MatrixVacuum();
             return;
         }
         RunList<?> runsRightNow = getBuilds();
         HashMap newStatusCache = new HashMap(statusCache);
-        for(Object currentJob : statusCache.keySet()) {
-            if(!runsRightNow.contains(currentJob))
+        for (Object currentJob : statusCache.keySet()) {
+            if (!runsRightNow.contains(currentJob)) {
                 newStatusCache.remove(currentJob);
+            }
         }
-        if(newStatusCache != statusCache)
+        if (newStatusCache != statusCache) {
             statusCache = newStatusCache;
+        }
     }
-    
+
     public ArrayList<String> getMatrixStepHeaders() {
         if (lastKnownBuild != null && cachedStepHeaders.size() > 0 && getBuilds().getLastBuild().equals(lastKnownBuild)) {
             return cachedStepHeaders;
