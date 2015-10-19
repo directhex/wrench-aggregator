@@ -261,10 +261,9 @@ public class Summary extends InvisibleAction {
             if (target.getResult().equals(Result.FAILURE)) {
                 return "ff0000";
             }
-            if (target.getResult().equals(Result.ABORTED)) {
-                return "800080";
-            }
             return "d3d3d3";
+        } else if (target.getResult().equals(Result.ABORTED)) {
+            return "92675c";
         }
         return "ffff00";
     }
