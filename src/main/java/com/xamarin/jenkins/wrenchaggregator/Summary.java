@@ -251,16 +251,19 @@ public class Summary extends InvisibleAction {
         } catch (Exception e) {
             if (target.getResult() != null) {
                 if (target.getResult().isCompleteBuild()) {
-                    return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>";
+                    result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>");
+                    return result.toString();
                 } else if (target.getResult().equals(Result.ABORTED)) {
                     result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #92675c;\">ABORTED</td>" );
                     statusCache.put(target, result.toString());
                     return result.toString();
                 } else {
-                    return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 6) ? this.lastColspan : 6) + "\" style=\"background-color: #000000; color: #ffffff;\">ERROR</td>";
+                    result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 6) ? this.lastColspan : 6) + "\" style=\"background-color: #000000; color: #ffffff;\">ERROR</td>");
+                    return result.toString();
                 }
             } else {
-                return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>";
+                result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>");
+                return result.toString();
             }
         }
     }
