@@ -181,7 +181,7 @@ public class Summary extends InvisibleAction {
         MatrixRun current;
         for (int i = 0; i < target.getExactRuns().size(); i++) {
             current = target.getExactRuns().get(i);
-            result.append("<td class=\"wrench\" style=\"min-width: 100px; background-color: #");
+            result.append("<td class=\"wrench\" style=\"background-color: #");
             result.append(getColor(current));
             result.append("\"><a href=\"");
             result.append(current.getAbsoluteUrl());

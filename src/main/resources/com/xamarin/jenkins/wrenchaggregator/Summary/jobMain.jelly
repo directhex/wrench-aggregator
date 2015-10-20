@@ -72,10 +72,10 @@ THE SOFTWARE.
                 <th class="normal">Diff</th>
                 <j:choose>
                     <j:when test="${it.isMatrix}">
-                        <th class="normal">Arch</th>
+                        <th class="normal" style="min-width: 100px;">Arch</th>
                     </j:when>
                 </j:choose>
-                <th class="normal">Builder</th>
+                <th class="normal" style="min-width: 100px;">Builder</th>
                 <j:forEach var="step" items="${it.stepHeaders}">
                     <th class="rotate">
                         <div>
