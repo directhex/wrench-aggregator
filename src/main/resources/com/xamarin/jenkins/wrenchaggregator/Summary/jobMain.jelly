@@ -75,6 +75,7 @@ THE SOFTWARE.
                         <th class="normal">Arch</th>
                     </j:when>
                 </j:choose>
+                <th class="normal">Builder</th>
                 <j:forEach var="step" items="${it.stepHeaders}">
                     <th class="rotate">
                         <div>

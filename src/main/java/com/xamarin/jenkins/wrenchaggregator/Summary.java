@@ -200,10 +200,17 @@ public class Summary extends InvisibleAction {
         if (statusCache.containsKey(target)) {
             return (String) (statusCache.get(target));
         }
+        StringBuilder result = new StringBuilder();
+        result.append("<td class=\"wrench\">");
+        if (target.getBuiltOn() != null) {
+            result.append(target.getBuiltOn().getNodeName());
+        } else {
+            result.append("¯\\_(ツ)_/¯");
+        }
+        result.append("</td>");
         try {
             String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
             rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
-            StringBuilder result = new StringBuilder();
             XPath xpath = XPathFactory.newInstance().newXPath();
             InputSource inputSource = new InputSource(new StringReader(rawStatus));
             NodeList nodes = (NodeList) xpath.evaluate("/table/tr", inputSource, XPathConstants.NODESET);
@@ -246,9 +253,9 @@ public class Summary extends InvisibleAction {
                 if (target.getResult().isCompleteBuild()) {
                     return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>";
                 } else if (target.getResult().equals(Result.ABORTED)) {
-                    String resultString = "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #92675c;\">ABORTED</td>";
-                    statusCache.put(target, resultString);
-                    return resultString;
+                    result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #92675c;\">ABORTED</td>" );
+                    statusCache.put(target, result.toString());
+                    return result.toString();
                 } else {
                     return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 6) ? this.lastColspan : 6) + "\" style=\"background-color: #000000; color: #ffffff;\">ERROR</td>";
                 }
