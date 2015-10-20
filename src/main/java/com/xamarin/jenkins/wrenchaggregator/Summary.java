@@ -250,28 +250,29 @@ public class Summary extends InvisibleAction {
                     statusCache.put(target, resultString);
                     return resultString;
                 } else {
-                    return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>";
+                    return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 6) ? this.lastColspan : 6) + "\" style=\"background-color: #000000; color: #ffffff;\">ERROR</td>";
                 }
             } else {
-                return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 6) ? this.lastColspan : 6) + "\" style=\"background-color: #000000; color: #ffffff;\">ERROR</td>";
+                return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>";
             }
         }
     }
 
     public String getColor(AbstractBuild<?, ?> target) {
-        if (target.getResult() != null && target.getResult().isCompleteBuild()) {
-            if (target.getResult().equals(Result.SUCCESS)) {
-                return "00ff7f";
+        if (target.getResult() != null) {
+            if (target.getResult().isCompleteBuild()) {
+                if (target.getResult().equals(Result.SUCCESS)) {
+                    return "00ff7f";
+                } else if (target.getResult().equals(Result.UNSTABLE)) {
+                    return "ffa500";
+                } else if (target.getResult().equals(Result.FAILURE)) {
+                    return "ff0000";
+                } else {
+                    return "d3d3d3";
+                }
+            } else if (target.getResult().equals(Result.ABORTED)) {
+                return "92675c";
             }
-            if (target.getResult().equals(Result.UNSTABLE)) {
-                return "ffa500";
-            }
-            if (target.getResult().equals(Result.FAILURE)) {
-                return "ff0000";
-            }
-            return "d3d3d3";
-        } else if (target.getResult().equals(Result.ABORTED)) {
-            return "92675c";
         }
         return "ffff00";
     }
