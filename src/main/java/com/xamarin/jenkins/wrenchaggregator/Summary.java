@@ -242,10 +242,18 @@ public class Summary extends InvisibleAction {
             statusCache.put(target, result.toString());
             return result.toString();
         } catch (Exception e) {
-            if (target.getResult() != null && target.getResult().isCompleteBuild()) {
-                return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>";
+            if (target.getResult() != null) {
+                if (target.getResult().isCompleteBuild()) {
+                    return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>";
+                } else if (target.getResult().equals(Result.ABORTED)) {
+                    String resultString = "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #92675c;\">ABORTED</td>";
+                    statusCache.put(target, resultString);
+                    return resultString;
+                } else {
+                    return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>";
+                }
             } else {
-                return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>";
+                return "<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 6) ? this.lastColspan : 6) + "\" style=\"background-color: #000000; color: #ffffff;\">ERROR</td>";
             }
         }
     }
