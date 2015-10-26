@@ -87,6 +87,11 @@ THE SOFTWARE.
         </thead>
         <tbody>
             <j:forEach var="build" items="${it.builds}">
+                <j:if test="${it.isMatrix}">
+                    <tr>
+                        <td style="height: 1px;"></td>
+                    </tr>
+                </j:if>
                 <tr>
                     <td rowspan="${it.isMatrix ? it.getMatrixVariables(build).size() : null}" class="wrench" style="background-color: #${it.getColor(build)};">
                         <a href="${build.absoluteUrl}">${build.displayName}</a>
