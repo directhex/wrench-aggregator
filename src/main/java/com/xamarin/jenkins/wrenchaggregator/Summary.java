@@ -286,7 +286,7 @@ public class Summary extends InvisibleAction {
                     return result.toString();
                 }
             } else {
-                result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\">RUNNING</td>");
+                result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\"><a href=\"" + target.getAbsoluteUrl() + "/console\">RUNNING</a></td>");
                 return result.toString();
             }
         }
