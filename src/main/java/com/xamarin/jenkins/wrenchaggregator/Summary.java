@@ -252,13 +252,17 @@ public class Summary extends InvisibleAction {
             for (String column : getStepHeaders()) {
                 if (nodesStatus.containsKey(column)) {
                     if (((String) (nodesStatus.get(column))).startsWith("Failed")) {
-                        result.append("<td class=\"wrench\" style=\"background-color: #ff0000;\"><a href=\"");
+                        result.append("<td class=\"wrench\" style=\"background-color: #ff0000;\"><a title=\"");
+                        result.append(column);
+                        result.append("\" href=\"");
                         result.append(((String) (nodesStatus.get(column))).substring(7));
                         result.append("\">✗</a></td>");
                     } else if (nodesStatus.get(column).equals("Passed")) {
                         result.append("<td class=\"wrench\" style=\"background-color: #00ff7f;\">✓</td>");
                     } else if (((String) (nodesStatus.get(column))).startsWith("Unstable")) {
-                        result.append("<td class=\"wrench\" style=\"background-color: #ffa500;\"><a href=\"");
+                        result.append("<td class=\"wrench\" style=\"background-color: #ffa500;\"><a title=\"");
+                        result.append(column);
+                        result.append("\" href=\"");
                         result.append(((String) (nodesStatus.get(column))).substring(9));
                         result.append("\">☹</a></td>");
                     } else if (nodesStatus.get(column).equals("Skipped")) {
