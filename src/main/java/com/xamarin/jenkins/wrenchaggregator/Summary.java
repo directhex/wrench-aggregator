@@ -71,11 +71,28 @@ public class Summary extends InvisibleAction {
     }
 
     public String getSha1(AbstractBuild<?, ?> target) {
-        return ((GitSCM) (project.getScm())).getBuildData(target).getLastBuiltRevision().getSha1String();
+        try {
+            if (((GitSCM) (project.getScm())).getBuildData(target) != null) {
+                if (((GitSCM) (project.getScm())).getBuildData(target).getLastBuiltRevision() != null) {
+                    return ((GitSCM) (project.getScm())).getBuildData(target).getLastBuiltRevision().getSha1String();
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public String getRepoUrl() {
-        return ((GitSCM) (project.getScm())).getBrowser().getRepoUrl();
+        try {
+            if (((GitSCM) (project.getScm())).getBrowser() != null) {
+                return ((GitSCM) (project.getScm())).getBrowser().getRepoUrl();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public Boolean getIsMatrix() {
