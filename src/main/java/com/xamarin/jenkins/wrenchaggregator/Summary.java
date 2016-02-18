@@ -24,7 +24,6 @@ THE SOFTWARE.
 */
 package com.xamarin.jenkins.wrenchaggregator;
 
-import hudson.Extension;
 import hudson.matrix.Combination;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixConfiguration;
@@ -337,9 +336,9 @@ public class Summary extends InvisibleAction {
         return "Wrench aggregation for " + project.toString();
     }
 
-    @Extension
     public static class SummaryFactory extends TransientProjectActionFactory {
 
+        Combination Axis;
         /**
          * For matrix projects parameter actions are attached to the
          * MatrixProject
@@ -348,9 +347,13 @@ public class Summary extends InvisibleAction {
         public Collection<? extends Action> createFor(
                 @SuppressWarnings("rawtypes") AbstractProject target
         ) {
-            Combination Axis = (target instanceof MatrixConfiguration) ? ((MatrixConfiguration) target).getCombination() : null;
+            Axis = (target instanceof MatrixConfiguration) ? ((MatrixConfiguration) target).getCombination() : null;
 
             return Arrays.asList(new Summary(target, Axis));
+        }
+        
+        public Combination getAxis() {
+            return Axis;
         }
     }
 }
