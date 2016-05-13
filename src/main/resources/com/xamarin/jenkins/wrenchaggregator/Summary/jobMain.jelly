@@ -49,6 +49,7 @@ THE SOFTWARE.
         td.wrench {
         border-spacing: 0px;
         border: 1px solid black;
+        white-space: nowrap;
         }
         .wrench a:link {
         text-decoration: none;
