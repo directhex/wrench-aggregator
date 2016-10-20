@@ -245,7 +245,7 @@ public class Summary extends InvisibleAction {
         if (target.getBuiltOn() != null) {
             result.append(target.getBuiltOn().getNodeName());
         } else {
-            result.append("¯\\_(ツ)_/¯");
+            result.append("☁ Azure VM");
         }
         result.append("</td>");
         try {
