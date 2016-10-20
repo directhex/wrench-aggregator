@@ -283,6 +283,8 @@ public class Summary extends InvisibleAction {
                         result.append("\">☹</a></td>");
                     } else if (nodesStatus.get(column).equals("Skipped")) {
                         result.append("<td class=\"wrench\" style=\"background-color: #000000; color: #ffffff;\">⌛</td>");
+                    } else if (nodesStatus.get(column).equals("Interrupted")) {
+                        result.append("<td class=\"wrench\" style=\"background-color: #8b6257; color: #ffffff;\">💢</td>");
                     } else {
                         result.append("<td class=\"wrench\" style=\"background-color: #d3d3d3;\">?</td>");
                     }
