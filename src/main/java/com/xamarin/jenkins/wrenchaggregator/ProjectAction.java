@@ -66,7 +66,7 @@ public class ProjectAction extends BuildWrapper {
 
         public String getDisplayName() {
             // text displayed next to checkbox
-            return "Wrench display aggregator";
+            return "Build step display aggregator";
         }
     }
 

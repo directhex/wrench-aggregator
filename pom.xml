@@ -15,8 +15,8 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
-  <name>Wrench Aggregator Plugin</name>
-  <description>Aggregates multiple Wrench step outputs from matrix jobs</description>
+  <name>Build Step Aggregator Plugin</name>
+  <description>Aggregates multiple build step outputs from matrix jobs</description>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/TODO+Plugin</url>
   <licenses>
     <license>
