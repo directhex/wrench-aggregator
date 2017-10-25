@@ -65,7 +65,7 @@ THE SOFTWARE.
         }
     </style>
 
-    <h2>Wrench recent history</h2>
+    <h2>Build History</h2>
     <table style="border-collapse: collapse; border-spacing: 0px;">
         <thead>
             <tr>

@@ -335,7 +335,7 @@ public class Summary extends InvisibleAction {
 
     @Override
     public String toString() {
-        return "Wrench aggregation for " + project.toString();
+        return "Build step aggregation for " + project.toString();
     }
 
     public static class SummaryFactory extends TransientProjectActionFactory {
