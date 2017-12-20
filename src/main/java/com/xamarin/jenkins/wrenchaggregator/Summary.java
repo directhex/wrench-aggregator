@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -211,7 +212,7 @@ public class Summary extends InvisibleAction {
         ArrayList<String> results = new ArrayList<String>();
         List<MatrixRun> rawResults = target.getExactRuns();
         for (MatrixRun myRun : rawResults) {
-            results.add(myRun.getBuildVariables().values().iterator().next());
+            results.add(myRun.getBuildVariables().get("label"));
         }
         return results;
     }
@@ -226,7 +227,7 @@ public class Summary extends InvisibleAction {
             result.append("\"><a href=\"");
             result.append(current.getAbsoluteUrl());
             result.append("\">");
-            result.append(current.getBuildVariables().values().iterator().next());
+            result.append(current.getBuildVariables().get("label"));
             result.append("</a></td>");
             result.append(getSummary(current));
             if (i != target.getExactRuns().size() - 1) {
