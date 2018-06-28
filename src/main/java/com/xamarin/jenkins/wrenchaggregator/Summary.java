@@ -48,7 +48,7 @@ import java.util.Map;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-import org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildSummaryAction;
+import com.jenkinsci.plugins.badge.action.BadgeSummaryAction;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -146,8 +146,8 @@ public class Summary extends InvisibleAction {
         Vacuum();
         for (Run outertarget : getBuilds()) {
             for (MatrixRun target : ((MatrixBuild) (outertarget)).getExactRuns()) {
-                if (target.getActions(GroovyPostbuildSummaryAction.class).toArray().length > 0) {
-                    String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
+                if (target.getActions(BadgeSummaryAction.class).toArray().length > 0) {
+                    String rawStatus = ((BadgeSummaryAction) (target.getActions(BadgeSummaryAction.class).toArray()[0])).getText();
                     rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
                     try {
                         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -183,8 +183,8 @@ public class Summary extends InvisibleAction {
         cachedStepHeaders = new ArrayList<String>();
         Vacuum();
         for (Run target : getBuilds()) {
-            if (target.getActions(GroovyPostbuildSummaryAction.class).toArray().length > 0) {
-                String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
+            if (target.getActions(BadgeSummaryAction.class).toArray().length > 0) {
+                String rawStatus = ((BadgeSummaryAction) (target.getActions(BadgeSummaryAction.class).toArray()[0])).getText();
                 rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
                 try {
                     XPath xpath = XPathFactory.newInstance().newXPath();
@@ -250,7 +250,7 @@ public class Summary extends InvisibleAction {
         }
         result.append("</td>");
         try {
-            String rawStatus = ((GroovyPostbuildSummaryAction) (target.getActions(GroovyPostbuildSummaryAction.class).toArray()[0])).getText();
+            String rawStatus = ((BadgeSummaryAction) (target.getActions(BadgeSummaryAction.class).toArray()[0])).getText();
             rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
             XPath xpath = XPathFactory.newInstance().newXPath();
             InputSource inputSource = new InputSource(new StringReader(rawStatus));
