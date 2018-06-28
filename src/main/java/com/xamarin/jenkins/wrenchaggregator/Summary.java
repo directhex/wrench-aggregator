@@ -303,7 +303,7 @@ public class Summary extends InvisibleAction {
             });
             statusCache.put(target, result.toString());
             return result.toString();
-        } catch (XPathExpressionException e) {
+        } catch (XPathExpressionException | DOMException | ArrayIndexOutOfBoundsException e) {
             Result myResult = target.getResult();
             if (myResult != null) {
                 if (myResult.isCompleteBuild()) {
