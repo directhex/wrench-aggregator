@@ -44,11 +44,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import com.jenkinsci.plugins.badge.action.BadgeSummaryAction;
+import hudson.plugins.git.browser.GitRepositoryBrowser;
+import hudson.plugins.git.util.BuildData;
+import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -72,9 +74,11 @@ public class Summary extends InvisibleAction {
 
     public String getSha1(AbstractBuild<?, ?> target) {
         try {
-            if (((GitSCM) (project.getScm())).getBuildData(target) != null) {
-                if (((GitSCM) (project.getScm())).getBuildData(target).getLastBuiltRevision() != null) {
-                    return ((GitSCM) (project.getScm())).getBuildData(target).getLastBuiltRevision().getSha1String();
+            BuildData myBuildData = ((GitSCM) (project.getScm())).getBuildData(target);
+            if (myBuildData != null) {
+                Revision myRevision = myBuildData.getLastBuiltRevision();
+                if (myRevision != null) {
+                    return myRevision.getSha1String();
                 }
             }
             return null;
@@ -85,8 +89,14 @@ public class Summary extends InvisibleAction {
 
     public String getRepoUrl() {
         try {
-            if (((GitSCM) (project.getScm())).getBrowser() != null) {
-                return ((GitSCM) (project.getScm())).getBrowser().getRepoUrl();
+            GitSCM mySCM = ((GitSCM) (project.getScm()));
+            if (mySCM != null) {
+                GitRepositoryBrowser myBrowser = mySCM.getBrowser();
+                if (myBrowser != null) {
+                    return myBrowser.getRepoUrl();
+                } else {
+                    return null;
+                }
             } else {
                 return null;
             }
@@ -243,8 +253,9 @@ public class Summary extends InvisibleAction {
         }
         StringBuilder result = new StringBuilder();
         result.append("<td class=\"wrench\">");
-        if (target.getBuiltOn() != null) {
-            result.append(target.getBuiltOn().getNodeName());
+        hudson.model.Node myNode = target.getBuiltOn();
+        if (myNode != null) {
+            result.append(myNode.getNodeName());
         } else {
             result.append("☁ Azure VM");
         }
@@ -295,12 +306,13 @@ public class Summary extends InvisibleAction {
             }
             statusCache.put(target, result.toString());
             return result.toString();
-        } catch (Exception e) {
-            if (target.getResult() != null) {
-                if (target.getResult().isCompleteBuild()) {
+        } catch (XPathExpressionException e) {
+            Result myResult = target.getResult();
+            if (myResult != null) {
+                if (myResult.isCompleteBuild()) {
                     result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>");
                     return result.toString();
-                } else if (target.getResult().equals(Result.ABORTED)) {
+                } else if (myResult.equals(Result.ABORTED)) {
                     result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #92675c;\">ABORTED</td>" );
                     statusCache.put(target, result.toString());
                     return result.toString();
@@ -316,18 +328,19 @@ public class Summary extends InvisibleAction {
     }
 
     public String getColor(AbstractBuild<?, ?> target) {
-        if (target.getResult() != null) {
-            if (target.getResult().isCompleteBuild()) {
-                if (target.getResult().equals(Result.SUCCESS)) {
+        Result myResult = target.getResult();
+        if (myResult != null) {
+            if (myResult.isCompleteBuild()) {
+                if (myResult.equals(Result.SUCCESS)) {
                     return "00ff7f";
-                } else if (target.getResult().equals(Result.UNSTABLE)) {
+                } else if (myResult.equals(Result.UNSTABLE)) {
                     return "ffa500";
-                } else if (target.getResult().equals(Result.FAILURE)) {
+                } else if (myResult.equals(Result.FAILURE)) {
                     return "ff0000";
                 } else {
                     return "d3d3d3";
                 }
-            } else if (target.getResult().equals(Result.ABORTED)) {
+            } else if (myResult.equals(Result.ABORTED)) {
                 return "92675c";
             }
         }
