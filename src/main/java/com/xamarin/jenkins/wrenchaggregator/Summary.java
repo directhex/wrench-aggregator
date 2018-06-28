@@ -51,6 +51,7 @@ import com.jenkinsci.plugins.badge.action.BadgeSummaryAction;
 import hudson.plugins.git.browser.GitRepositoryBrowser;
 import hudson.plugins.git.util.BuildData;
 import javax.xml.xpath.XPathExpressionException;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -120,11 +121,9 @@ public class Summary extends InvisibleAction {
     private void MatrixVacuum() {
         RunList<?> runsRightNow = getBuilds();
         HashMap newStatusCache = new HashMap(statusCache);
-        for (Object currentJob : statusCache.keySet()) {
-            if (!runsRightNow.contains(((MatrixRun) currentJob).getParentBuild())) {
-                newStatusCache.remove(currentJob);
-            }
-        }
+        statusCache.keySet().stream().filter((currentJob) -> (!runsRightNow.contains(((MatrixRun) currentJob).getParentBuild()))).forEachOrdered((currentJob) -> {
+            newStatusCache.remove(currentJob);
+        });
         if (newStatusCache != statusCache) {
             statusCache = newStatusCache;
         }
@@ -137,11 +136,9 @@ public class Summary extends InvisibleAction {
         }
         RunList<?> runsRightNow = getBuilds();
         HashMap newStatusCache = new HashMap(statusCache);
-        for (Object currentJob : statusCache.keySet()) {
-            if (!runsRightNow.contains(currentJob)) {
-                newStatusCache.remove(currentJob);
-            }
-        }
+        statusCache.keySet().stream().filter((currentJob) -> (!runsRightNow.contains(currentJob))).forEachOrdered((currentJob) -> {
+            newStatusCache.remove(currentJob);
+        });
         if (newStatusCache != statusCache) {
             statusCache = newStatusCache;
         }
@@ -152,7 +149,7 @@ public class Summary extends InvisibleAction {
             return cachedStepHeaders;
         }
         lastKnownBuild = getBuilds().getLastBuild();
-        cachedStepHeaders = new ArrayList<String>();
+        cachedStepHeaders = new ArrayList<>();
         Vacuum();
         for (Run outertarget : getBuilds()) {
             for (MatrixRun target : ((MatrixBuild) (outertarget)).getExactRuns()) {
@@ -171,8 +168,8 @@ public class Summary extends InvisibleAction {
                             }
                             lastSeen = nodes.item(i).getTextContent();
                         }
-                    } catch (Exception e) {
-                        cachedStepHeaders = new ArrayList<String>();
+                    } catch (XPathExpressionException | DOMException e) {
+                        cachedStepHeaders = new ArrayList<>();
                         return cachedStepHeaders;
                     }
                 }
@@ -190,7 +187,7 @@ public class Summary extends InvisibleAction {
             return cachedStepHeaders;
         }
         lastKnownBuild = getBuilds().getLastBuild();
-        cachedStepHeaders = new ArrayList<String>();
+        cachedStepHeaders = new ArrayList<>();
         Vacuum();
         for (Run target : getBuilds()) {
             if (target.getActions(BadgeSummaryAction.class).toArray().length > 0) {
@@ -208,8 +205,8 @@ public class Summary extends InvisibleAction {
                         }
                         lastSeen = nodes.item(i).getTextContent();
                     }
-                } catch (Exception e) {
-                    cachedStepHeaders = new ArrayList<String>();
+                } catch (XPathExpressionException | DOMException e) {
+                    cachedStepHeaders = new ArrayList<>();
                     return cachedStepHeaders;
                 }
             }
@@ -219,11 +216,11 @@ public class Summary extends InvisibleAction {
     }
 
     public ArrayList<String> getMatrixVariables(MatrixBuild target) {
-        ArrayList<String> results = new ArrayList<String>();
+        ArrayList<String> results = new ArrayList<>();
         List<MatrixRun> rawResults = target.getExactRuns();
-        for (MatrixRun myRun : rawResults) {
+        rawResults.forEach((myRun) -> {
             results.add(myRun.getBuildVariables().get("label"));
-        }
+        });
         return results;
     }
 
@@ -277,7 +274,7 @@ public class Summary extends InvisibleAction {
                 }
                 nodesStatus.put(nodes.item(i).getChildNodes().item(0).getTextContent(), foundItem);
             }
-            for (String column : getStepHeaders()) {
+            getStepHeaders().forEach((column) -> {
                 if (nodesStatus.containsKey(column)) {
                     if (((String) (nodesStatus.get(column))).startsWith("Failed")) {
                         result.append("<td class=\"wrench\" style=\"background-color: #ff0000;\"><a title=\"");
@@ -303,25 +300,25 @@ public class Summary extends InvisibleAction {
                 } else {
                     result.append("<td class=\"wrench\"></td>");
                 }
-            }
+            });
             statusCache.put(target, result.toString());
             return result.toString();
         } catch (XPathExpressionException e) {
             Result myResult = target.getResult();
             if (myResult != null) {
                 if (myResult.isCompleteBuild()) {
-                    result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 21) ? this.lastColspan : 21) + "\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>");
+                    result.append("<td class=\"wrench\" colspan=\"").append((this.lastColspan > 21) ? this.lastColspan : 21).append("\" style=\"background-color: #ff0000;\">NO TEST RESULTS FOUND</td>");
                     return result.toString();
                 } else if (myResult.equals(Result.ABORTED)) {
-                    result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #92675c;\">ABORTED</td>" );
+                    result.append("<td class=\"wrench\" colspan=\"").append((this.lastColspan > 7) ? this.lastColspan : 7).append("\" style=\"background-color: #92675c;\">ABORTED</td>");
                     statusCache.put(target, result.toString());
                     return result.toString();
                 } else {
-                    result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 6) ? this.lastColspan : 6) + "\" style=\"background-color: #000000; color: #ffffff;\">ERROR</td>");
+                    result.append("<td class=\"wrench\" colspan=\"").append((this.lastColspan > 6) ? this.lastColspan : 6).append("\" style=\"background-color: #000000; color: #ffffff;\">ERROR</td>");
                     return result.toString();
                 }
             } else {
-                result.append("<td class=\"wrench\" colspan=\"" + ((this.lastColspan > 7) ? this.lastColspan : 7) + "\" style=\"background-color: #ffff00;\"><a href=\"" + target.getAbsoluteUrl() + "/console\">RUNNING</a></td>");
+                result.append("<td class=\"wrench\" colspan=\"").append((this.lastColspan > 7) ? this.lastColspan : 7).append("\" style=\"background-color: #ffff00;\"><a href=\"").append(target.getAbsoluteUrl()).append("/console\">RUNNING</a></td>");
                 return result.toString();
             }
         }
@@ -358,6 +355,8 @@ public class Summary extends InvisibleAction {
         /**
          * For matrix projects parameter actions are attached to the
          * MatrixProject
+         * @param target
+         * @return 
          */
         @Override
         public Collection<? extends Action> createFor(

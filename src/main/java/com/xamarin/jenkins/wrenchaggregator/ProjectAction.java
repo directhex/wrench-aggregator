@@ -64,6 +64,7 @@ public class ProjectAction extends BuildWrapper {
     @Extension
     public static final class DescriptorImpl extends Descriptor<BuildWrapper> {
 
+        @Override
         public String getDisplayName() {
             // text displayed next to checkbox
             return "Build step display aggregator";
