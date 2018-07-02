@@ -155,7 +155,7 @@ public class Summary extends InvisibleAction {
             for (MatrixRun target : ((MatrixBuild) (outertarget)).getExactRuns()) {
                 if (target.getActions(BadgeSummaryAction.class).toArray().length > 0) {
                     String rawStatus = ((BadgeSummaryAction) (target.getActions(BadgeSummaryAction.class).toArray()[0])).getText();
-                    rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
+                    rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("<table"));
                     try {
                         XPath xpath = XPathFactory.newInstance().newXPath();
                         InputSource inputSource = new InputSource(new StringReader(rawStatus));
@@ -192,7 +192,7 @@ public class Summary extends InvisibleAction {
         for (Run target : getBuilds()) {
             if (target.getActions(BadgeSummaryAction.class).toArray().length > 0) {
                 String rawStatus = ((BadgeSummaryAction) (target.getActions(BadgeSummaryAction.class).toArray()[0])).getText();
-                rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
+                rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("<table"));
                 try {
                     XPath xpath = XPathFactory.newInstance().newXPath();
                     InputSource inputSource = new InputSource(new StringReader(rawStatus));
@@ -259,7 +259,7 @@ public class Summary extends InvisibleAction {
         result.append("</td>");
         try {
             String rawStatus = ((BadgeSummaryAction) (target.getActions(BadgeSummaryAction.class).toArray()[0])).getText();
-            rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("</h1>") + 5);
+            rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("<table"));
             XPath xpath = XPathFactory.newInstance().newXPath();
             InputSource inputSource = new InputSource(new StringReader(rawStatus));
             NodeList nodes = (NodeList) xpath.evaluate("/table/tr", inputSource, XPathConstants.NODESET);
