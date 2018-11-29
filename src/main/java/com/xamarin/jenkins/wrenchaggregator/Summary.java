@@ -144,6 +144,10 @@ public class Summary extends InvisibleAction {
         }
     }
 
+    public BadgeSummaryAction getAggregatorAction(Run target) {
+        return target.getActions(BadgeSummaryAction.class).stream().filter(action -> action.getIconPath() == "/userContent/jenkins-head.png" || action.getIconPath() == "warning.gif").findFirst().orElse(null);
+    }
+
     public ArrayList<String> getMatrixStepHeaders() {
         if (lastKnownBuild != null && cachedStepHeaders.size() > 0 && getBuilds().getLastBuild().equals(lastKnownBuild)) {
             return cachedStepHeaders;
@@ -153,8 +157,8 @@ public class Summary extends InvisibleAction {
         Vacuum();
         for (Run outertarget : getBuilds()) {
             for (MatrixRun target : ((MatrixBuild) (outertarget)).getExactRuns()) {
-                if (target.getActions(BadgeSummaryAction.class).toArray().length > 0) {
-                    String rawStatus = ((BadgeSummaryAction) (target.getActions(BadgeSummaryAction.class).toArray()[0])).getText();
+                if (getAggregatorAction(target) != null) {
+                    String rawStatus = getAggregatorAction(target).getText();
                     rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("<table"));
                     try {
                         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -179,6 +183,7 @@ public class Summary extends InvisibleAction {
         return cachedStepHeaders;
     }
 
+
     public ArrayList<String> getStepHeaders() {
         if (getIsMatrix()) {
             return getMatrixStepHeaders();
@@ -190,8 +195,8 @@ public class Summary extends InvisibleAction {
         cachedStepHeaders = new ArrayList<>();
         Vacuum();
         for (Run target : getBuilds()) {
-            if (target.getActions(BadgeSummaryAction.class).toArray().length > 0) {
-                String rawStatus = ((BadgeSummaryAction) (target.getActions(BadgeSummaryAction.class).toArray()[0])).getText();
+            if (getAggregatorAction(target) != null) {
+                String rawStatus = getAggregatorAction(target).getText();
                 rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("<table"));
                 try {
                     XPath xpath = XPathFactory.newInstance().newXPath();
@@ -258,7 +263,7 @@ public class Summary extends InvisibleAction {
         }
         result.append("</td>");
         try {
-            String rawStatus = ((BadgeSummaryAction) (target.getActions(BadgeSummaryAction.class).toArray()[0])).getText();
+            String rawStatus = getAggregatorAction(target).getText();
             rawStatus = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + rawStatus.substring(rawStatus.indexOf("<table"));
             XPath xpath = XPathFactory.newInstance().newXPath();
             InputSource inputSource = new InputSource(new StringReader(rawStatus));
